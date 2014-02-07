@@ -8,21 +8,25 @@ JS-клиент предназначен для подключения к адм
 
 1. **Скачать последнюю версию библиотеки и подключить** в конец кода админки магазина после всех остальных скриптов и перед закрывающим тегом `</body>`.
 
-		...
-		<script src="js/dostavista_api.min.js"></script>
-		</body>
+	```html
+	...
+	<script src="js/dostavista_api.min.js"></script>
+	</body>
+	```
 
 2. **Вставить тег `<span class="DSTA_button"></span>`** в тех местах, где вы хотите видеть кнопки «в Достависту». По-умолчанию, каждая кнопка будет отвечать за отправку данных одного заказа.
 
 3. **Добавить dsta-аттрибуты, описывающие каждый заказ.** Для каждого тега `.DSTA_button` в разметке на момент инициализации Javascript должны содержаться все необходимые параметры.
 
-		<span class="DSTA_button"
-			...
-			dsta-matter="Видеорегистратор" <!-- что везём -->
-			dsta-insurance="15000" <!-- страховая сумма от 0 до 15000 в рублях -->
-			...
+	```html
+	<span class="DSTA_button"
+		...
+		dsta-matter="Видеорегистратор" <!-- что везём -->
+		dsta-insurance="15000" <!-- страховая сумма от 0 до 15000 в рублях -->
+		...
 
-			></span>
+		></span>
+	```
 
 	**Полный список всех атрибутов**
 
@@ -42,30 +46,35 @@ JS-клиент предназначен для подключения к адм
 
 4. **Зарегистрировать общие для всего магазина параметры: `client_id` и `token`** для однозначной идентификации. Метод `register` не делает XHR-запросов, а просто сохраняет общие параметры на будущее.
 
-		<script>
-			DSTA_Client.register({
-				client_id: 1234,
-				token: 'xxxx'
-			});
-		</script>
+	```html
+	<script>
+		DSTA_Client.register({
+			client_id: 1234,
+			token: 'xxxx'
+		});
+	</script>
+	```
 
 6. **Определить общую глобальную функцию-callback, которая будет вызываться после отправки данных заказа.**
 
-		<script>
-			DSTA_success = function(status, data) {
-				if (!status) {
-					alert(data.error_code + "\n" + data.error_message);
-					return;
-				}
-				
-				MyShop_save({
-					order_id: data.order_id, // ID заказа в системе Dostavista.ru
-					delivery_cost: data.payment // приблизительная стоимость доставки.
-				});
-			};
-		</script>
+	```html
+	<script>
+		DSTA_success = function(status, data) {
+			if (!status) {
+				alert(data.error_code + "\n" + data.error_message);
+				return;
+			}
+			
+			MyShop_save({
+				order_id: data.order_id, // ID заказа в системе Dostavista.ru
+				delivery_cost: data.payment // приблизительная стоимость доставки.
+			});
+		};
+	</script>
+	```
 
-	Если `status === true`, значит заказ попал в Достависту, и можно сохранять результат у себя на сервере. В примере выше это делает функция `MyShop_save()`, но вы можете использовать любую другую
+	Если `status === true`, значит заказ попал в Достависту, и можно сохранять результат у себя на сервере. В примере выше это делает функция `MyShop_save()`, но вы можете использовать любую другую.
+
 
 	** Параметры коллбэка **
 
