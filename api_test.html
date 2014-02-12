@@ -6,10 +6,12 @@
 
 	<style>
 		.DSTA_button {
+			display: inline;
 			display: inline-block;
+			zoom: 1;
 			margin: 0;
 			padding: 7px 20px;
-			font: normal 16px/1 "Trebuchet MS", sans-serif;
+			font: normal 16px/1 Arial, Helvetica, sans-serif;
 			background: #ba2270;
 			color: white;
 			-webkit-border-radius: 5px;
@@ -26,25 +28,22 @@
 	<span class="DSTA_button" 
 		dsta-matter="Документы"
 		dsta-insurance="200"
-		dsta-point0_address="ул. Полянка, 27, к 3 стр 5, кв 127"
-		dsta-point0_time_start="2014-02-15 18:00:00"
-		dsta-point0_time="2014-02-15 20:00:00"
-		dsta-point0_contact="Иван Иванович"
-		dsta-point0_phone="+7 981 99900-30"
-		dsta-point0_weight="8.7"
-		dsta-point0_taking="1200.00",
-		dsta-point0_client_order_id="АА-122910"
+		dsta-address="ул. Полянка, 27, к 3 стр 5, кв 127"
+		dsta-required_time_start="2014-02-15 18:00:00"
+		dsta-required_time="2014-02-15 20:00:00"
+		dsta-contact_person="Иван Иванович"
+		dsta-phone="+7 981 99900-30"
+		dsta-weight="8"
+		dsta-taking="1200",
+		dsta-client_order_id="АА-122910"
 	>В Достависту</span>
-
-
-
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="dostavista_api.js"></script>
 	<script>
-		DSTA_Client.register({
-			clientId: 123,
-			token: 'abc'
+		DostavistaApi.setClient({
+			clientId: 13407,
+			token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
 		});
 	</script>
 </body>

@@ -1,6 +1,6 @@
 /**
  * Модуль для AJAX-работы с API Dostavista.ru.
- * Использует в качесте транспорта jQuery.ajax().
+ * Использует в качесте транспорта jQuery.ajax(), результат отдаётся в JSONP.
  * Зависит от jQuery 1.8 и старше.
  * 
  * @param  {Object} global window
@@ -16,10 +16,10 @@
 	 */
 	var noDebug = false;
 
-	var apiUrl = 'http://dostavista.ru/bapi/order';
+	// var apiUrl = 'http://dostavista.ru/bapi/order';
+	var apiUrl = 'http://beta.dostavista.ru/bapi/order';
 
-	var clientId = null;
-	var token = null;
+	var authParams = {};
 
 	/**
 	 * Выводит сообщение об ошибке в dev-консоль, если она доступна, либо делает alert.
@@ -52,70 +52,118 @@
 	 * @param  	{Object} params	Параметры clientId, token.
 	 * @return 	{Boolean} true, если всё в порядке.
 	 */
-	var registerClient = function(params) {
-		clientId = params.clientId || false;
-		token = params.token || false;
+	var setClient = function(params) {
+		authParams.client_id = params.clientId || false;
+		authParams.token = params.token || false;
 	};
 
 	/**
-	 * Обрабатывает клик по кнопке, вызывая все необходимые хелперы. 
+	 * Обрабатывает клик по кнопке, проверяет параметры и отправляет их на сервер.
 	 * 
 	 * @param  {Object} e Объект-событие.
 	 */
 	var handleClick = function(e) {
 		e.preventDefault();
 
-		if (!clientId || !token) {
+		if (!authParams.client_id || !authParams.token) {
 			_error('Установите clientId и token сразу после подключения плагина.');
 			return;
 		}
 
-		var params = _parseArguments.call(this);
+		var params = _parseParams.call(this);
 		try {
 			_checkParams(params);
 		} catch (e) {
 			_error(e);
+			// TODO хук для отсутствующих параметров
 			return;
 		}
 
-		console.log('Параметры ОК');
-		console.dir(params);
+		var apiCall = _sendOrder(params);
+		apiCall.done(function ajaxDone(result) {
+			console.log(result);
+
+			// TODO хук для обработки успешного результата
+		});
+
+		apiCall.fail(function ajaxFail(jqxhr, text, error) {
+			console.log(text);
+			console.log(error);
+
+			// хук для обработки ошибки.
+		});
 	};
 
 
 	/**
-	 * Достаёт из DOM-ноды все аргументы, валидирует их и преобразовывает в нужные типы.
+	 * Делает AJAX-запрос к API Достависты, получая результат в JSONP.
+	 * 
+	 * @param  {Object} params Хэш с обработанными параметрами
+	 * @return {Promise} Разрешается, когда приходит ответ от сервера.
+	 */
+	var _sendOrder = function(params) {
+		params = $.extend(params, authParams);
+
+		return $.ajax({
+			data: params,
+			url: apiUrl,
+			type: 'post',
+			dataType: 'jsonp',
+			cache: false
+		});
+	};
+
+
+	/**
+	 * Достаёт из DOM-ноды все аргументы, валидирует, преобразовывает в нужные типы 
+	 * и раскладывает в правильную структуру.
 	 * @TODO сделать нормальный парсинг телефона, даты
 	 * 
 	 * @return {Object} Хэш, в котором существующим в разметке ключам соответствуют их значения.
 	 */
-	var _parseArguments = function() {
+	var _parseParams = function() {
 		var toNumber = function(val) { return Number(val); }
 		var toDate = function(val) { return Date(val); }
 		var toPhone = function(val) { return val; }
 
+		var getParamsFromDomAttrs = function(attrs, domNode) {
+			var params = {};
+			var paramValue = null;
+			for (var i = 0, max = attrs.length; i < max; i++) {
+				paramValue = $(domNode).attr(attrs[i].name);
+				if (paramValue) {
+					params[attrs[i].name.replace('dsta-', '')] = attrs[i].parse ? attrs[i].parse(paramValue) : paramValue;
+				}
+			}
+
+			return params;
+		};
+
 		var attrs = [
 			{ name: "dsta-matter" },
-			{ name: "dsta-insurance", parse: toNumber },
-			{ name: "dsta-point0_address" },
-			{ name: "dsta-point0_time_start", parse: toDate },
-			{ name: "dsta-point0_time", parse: toDate },
-			{ name: "dsta-point0_contact" },
-			{ name: "dsta-point0_phone", parse: toPhone },
-			{ name: "dsta-point0_weight", parse: toNumber },
-			{ name: "dsta-point0_taking", parse: toNumber },
-			{ name: "dsta-point0_client_order_i" }
+			{ name: "dsta-insurance", parse: toNumber }
 		];
 
-		var params = {};
+		var pointAttrs = [
+			{ name: "dsta-client_order_id" },
+			{ name: "dsta-taking", parse: toNumber },
+			{ name: "dsta-weight", parse: toNumber },
+			{ name: "dsta-phone", parse: toPhone },
+			{ name: "dsta-contact_person" },
+			{ name: "dsta-required_time", parse: toDate },
+			{ name: "dsta-required_time_start", parse: toDate },
+			{ name: "dsta-address" }
+		];
 
-		var paramValue = null;
-		for (var i = 0, max = attrs.length; i < max; i++) {
-			paramValue = $(this).attr(attrs[i].name);
-			if (paramValue) {
-				params[attrs[i].name.replace('dsta-', '')] = attrs[i].parse ? attrs[i].parse(paramValue) : paramValue;
-			}
-		}
+		// Api получает массив точек, но мы передаём только одну
+		var params = {
+			point: [
+				{}
+			]
+		};
+
+		params = $.extend(params, getParamsFromDomAttrs(attrs, this));
+		params.point[0] = getParamsFromDomAttrs(pointAttrs, this);
 
 		return params;
 	};
@@ -123,31 +171,32 @@
 
 	/**
 	 * Проверяет корректность параметров и бросает исключение, если что-то не так.
-	 * @TODO сделать нормальную проверку телефона, времени.
+	 * @TODO сделать нормальную проверку телефона, даты.
 	 * 
-	 * @param  {Object} params Хэш с параметрами, полученный от _parseArguments.
+	 * @param  {Object} params Хэш с параметрами, полученный от _parseParams.
 	 * @return {[type]}        [description]
 	 */
 	var _checkParams = function(params) {
 		var error = "";
 
 		if (!params.matter) error += 'Не задан параметр matter.\n';
-		if (!params['point0_address']) error += 'Не задан параметр point0_address.\n';
-		if (!params['point0_phone']) error += 'Не задан параметр point0_phone.\n';
-		if (!params['point0_time_start']) error += 'Не задан параметр point0_time_start.\n';
-		if (!params['point0_time']) error += 'Не задан параметр point0_time.\n';
-		if (!params['point0_weight']) error += 'Не задан параметр point0_weight.\n';
+		if (!params.point[0]['address']) error += 'Не задан параметр address.\n';
+		if (!params.point[0]['phone']) error += 'Не задан параметр phone.\n';
+		if (!params.point[0]['required_time_start']) error += 'Не задан параметр time_start.\n';
+		if (!params.point[0]['required_time']) error += 'Не задан параметр time.\n';
+		if (!params.point[0]['weight']) error += 'Не задан параметр weight.\n';
 
 		if (error) {
 			throw error;
 		}
 	}
 
+
 	// Обработчики событий
 	$(document).on('click', '.DSTA_button', handleClick);
 
 	// Глобально доступный интерфейс.
-	global.DSTA_Client = {
-		register: registerClient
+	global.DostavistaApi = {
+		setClient: setClient
 	};
 })(window, document, jQuery);
