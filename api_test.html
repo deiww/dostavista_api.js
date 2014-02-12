@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test dostavista API</title>
+
+	<style>
+		.DSTA_button {
+			display: inline-block;
+			margin: 0;
+			padding: 7px 20px;
+			font: normal 16px/1 "Trebuchet MS", sans-serif;
+			background: #ba2270;
+			color: white;
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+			-webkit-box-shadow: 0 2px 0 #591036;
+			-moz-box-shadow: 0 2px 0 #591036;
+			box-shadow: 0 2px 0 #591036;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<span class="DSTA_button" 
+		dsta-matter="Документы"
+		dsta-insurance="200"
+		dsta-point0_address="ул. Полянка, 27, к 3 стр 5, кв 127"
+		dsta-point0_time_start="2014-02-15 18:00:00"
+		dsta-point0_time="2014-02-15 20:00:00"
+		dsta-point0_contact="Иван Иванович"
+		dsta-point0_phone="+7 981 99900-30"
+		dsta-point0_weight="8.7"
+		dsta-point0_taking="1200.00",
+		dsta-point0_client_order_id="АА-122910"
+	>В Достависту</span>
+
+
+
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="dostavista_api.js"></script>
+	<script>
+		DSTA_Client.register({
+			clientId: 123,
+			token: 'abc'
+		});
+	</script>
+</body>
+</html>
