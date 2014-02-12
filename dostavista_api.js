@@ -53,7 +53,7 @@
 	 * @return 	{Boolean} true, если всё в порядке.
 	 */
 	var setClient = function(params) {
-		authParams.client_id = params.clientId || false;
+		authParams.client_id = params.client_id || false;
 		authParams.token = params.token || false;
 	};
 

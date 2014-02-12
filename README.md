@@ -52,7 +52,7 @@ JS-клиент предназначен для подключения к адм
 	```html
 	<script>
 		DostavistaApi.setClient({
-			clientId: 1234,
+			client_id: 1234,
 			token: 'xxxx'
 		});
 	</script>
