@@ -30,13 +30,16 @@
 			token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
 		});
 
-		DostavistaApi.setCallback('onParamsIllegal', function(params, error) {
-			console.log(params);
-			console.log(error);
+		DostavistaApi.setCallback('onBeforeSend', function(result) {
+			var def = $.Deferred();
+
+			
+
+			return def.promise();
 		});
 
 		DostavistaApi.setCallback('onSendSuccess', function(result) {
-			console.log(result);
+			console.log('Set message in CMS');
 		});
 	</script>
 </body>

@@ -9,24 +9,33 @@
  * 
  * @author Oleg Gromov <mail@oleggromov.com>
  */
-(function Dostavista(global, document, $) {
+(function DostavistaAPIClient(global, document, $) {
 	/**
 	 * Отключает ВСЕ сообщения плагина.
 	 * @type {Boolean}
 	 */
 	var noDebug = false;
 
-	var jsonpTimeout = 2 * 1000;
+	/**
+	 * Включает тестирование на бете.
+	 * @type {Boolean}
+	 */
+	var testOnBeta = true;
 
-	// var apiUrl = 'http://dostavista.ru/bapi/order';
-	var apiUrl = 'http://beta.dostavista.ru/bapi/order';
+	/**
+	 * Таймаут ответа от сервера, в секундах * 1000 мс.
+	 * @type {Number}
+	 */
+	var jsonpTimeout = 5 * 1000;
+
+
+	var apiUrl = testOnBeta ? 'http://beta.dostavista.ru/bapi/order' : 'http://dostavista.ru/bapi/order';
 
 	var callbacks = {
-		onParamsIllegal: null,
+		onBeforeSend: null,
 		onSendSuccess: null,
 		onSendError: null
 	};
-
 	var authParams = {};
 
 	/**
@@ -96,19 +105,31 @@
 
 	/**
 	 * Обрабатывает клик по кнопке, проверяет параметры и отправляет их на сервер.
+	 * Сбрасывает состояние при клике по кнопке с ошибкой.
 	 * 
 	 * @param  {Object} e Объект-событие.
 	 */
 	var handleClick = function(e) {
 		var button = this;
 
-		if (!_canSend.call(button)) return;
-
-		_setButtonState.call(button, 'sending');
+		if (!_canSend.call(button)) {
+			console.log('cannot send');
+			if (_isErrorState.call(button)) {
+				console.log('clearing state');
+				_setButtonState.call(button);
+			}
+			return;
+		}
 
 		if (!authParams.client_id || !authParams.token) {
 			_error('Установите clientId и token сразу после подключения плагина.');
 			return;
+		}
+
+		_setButtonState.call(button, 'sending');
+
+		if (typeof callbacks['onBeforeSend'] === 'function') {
+
 		}
 
 		var params = _parseParams.call(button);
@@ -126,15 +147,16 @@
 		}
 
 		var apiCall = _sendOrder(params);
-		apiCall.done(function ajaxDone(resJSON) {
+		apiCall.done(function onAjaxDone(resJSON) {
 			if (typeof callbacks['onSendSuccess'] === 'function') {
 				callbacks['onSendSuccess'](resJSON);
 			}
 
+			// TODO вынести в какое-нибудь другое место
 			_setButtonState.call(button, 'sent', 'ID заказа в Достависте: ' + resJSON.order_id);
 		});
 
-		apiCall.fail(function ajaxFail(jqxhr, text, error) {
+		apiCall.fail(function onAjaxFail(jqxhr, text, error) {
 			if (typeof callbacks['onSendError'] === 'function') {
 				callbacks['onSendError'](text, error);
 			} else {
@@ -154,24 +176,32 @@
 	 * @return {Promise} Разрешается, когда приходит ответ от сервера.
 	 */
 	var _sendOrder = function(params) {
-		params = $.extend(params, authParams);
-		
 		var def = $.Deferred();
-		$.ajax({
+		params = $.extend(params, authParams);
+
+		var sendParams = {
 			data: params,
-			// url: apiUrl,
-			url: 'http://localhost',
+			url: apiUrl,
 			type: 'post',
 			dataType: 'jsonp',
 			cache: false
-		}).done(function(result) {
+		};
+		
+		var onSendOrderDone = function(result) {
 			def.resolve(result);
-		}).fail(function(jqxhr, text, error) {
-			def.reject(jqxhr, text, error);
-		});
+		};
 
-		setTimeout(function() {
+		var onSendOrderFail = function(jqxhr, text, error) {
+			def.reject(jqxhr, text, error);
+		};
+
+		var xhr = $.ajax(sendParams)
+			.done(onSendOrderDone)
+			.fail(onSendOrderFail);
+
+		setTimeout(function waitForJSONPTimeout() {
 			def.reject(null, 'Ответа нет слишком долго. Возможно, проблемы с сетью.', null);
+			xhr.abort();
 		}, jsonpTimeout);
 
 		return def.promise();
@@ -179,8 +209,7 @@
 
 
 	/**
-	 * Достаёт из DOM-ноды все аргументы, валидирует, преобразовывает в нужные типы 
-	 * и раскладывает в правильную структуру.
+	 * Достаёт из DOM-ноды все аргументы, валидирует, преобразовывает в нужные типы и раскладывает в правильную структуру.
 	 * @TODO сделать нормальный парсинг телефона, даты
 	 * 
 	 * @return {Object} Хэш, в котором существующим в разметке ключам соответствуют их значения.
@@ -262,12 +291,16 @@
 	 * @param {String} state Одно из ['sending', 'sent', 'error']
 	 */
 	var _setButtonState = function(state, title) {
+		state = state || false;
+
 		$(this).removeClass();
 		$(this).addClass('DostavistaButton');
-		$(this).addClass('DostavistaButton_' + state);
 
-		if ($.inArray(state, ['sending', 'sent'])) {
-			$(this).addClass('DostavistaButton_disabled');
+		if (state) {
+			$(this).addClass('DostavistaButton_' + state);
+			if ($.inArray(state, ['sending', 'sent', 'error']) > -1) {
+				$(this).addClass('DostavistaButton_disabled');
+			}
 		}
 
 		$(this).removeAttr('title');
@@ -275,12 +308,22 @@
 	};
 
 	/**
-	 * Определяет, можно ли нажимать на кнопку.
+	 * Определяет, можно ли нажимать на кнопку по наличию disabled-модификатора.
 	 * 
 	 * @return {Boolean}
 	 */
 	var _canSend = function() {
 		return !$(this).hasClass('DostavistaButton_disabled');
+	};
+
+
+	/**
+	 * Сообщает, находится ли кнопка в состоянии ошибки.
+	 * 
+	 * @return {Boolean} Ошибка или нет
+	 */
+	var _isErrorState = function() {
+		return $(this).hasClass('DostavistaButton_error');
 	};
 
 

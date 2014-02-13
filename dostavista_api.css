@@ -1,4 +1,6 @@
 .DostavistaButton {
+	border: none;
+	outline: none;
 	display: inline-block;
 	margin: 0;
 	padding: 7px 15px 7px 45px;
@@ -23,6 +25,7 @@
 		content: 'В Достависту';
 	}
 
+/* Состояние отправки */
 .DostavistaButton_sending {
 	background-color: #7d4662;
 	cursor: default;
@@ -32,6 +35,7 @@
 		content: 'Отправка...';
 	}
 
+/* Успешно */
 .DostavistaButton_sent {
 	background-color: #45a314;
 	-webkit-box-shadow: 0 2px 0 #1f5910;
@@ -44,6 +48,7 @@
 		content: 'Отправлен';
 	}
 
+/* Ошибка */
 .DostavistaButton_error {
 	background-color: red;
 	-webkit-box-shadow: 0 2px 0 #591010;
@@ -53,5 +58,5 @@
 }
 	
 	.DostavistaButton_error:after {
-		content: 'В Достависту (!)';
+		content: 'Ошибка';
 	}
