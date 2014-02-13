@@ -17,19 +17,14 @@
 	var noDebug = false;
 
 	/**
-	 * Включает тестирование на бете.
-	 * @type {Boolean}
-	 */
-	var testOnBeta = true;
-
-	/**
 	 * Таймаут ответа от сервера, в секундах * 1000 мс.
 	 * @type {Number}
 	 */
 	var jsonpTimeout = 5 * 1000;
 
-
-	var apiUrl = testOnBeta ? 'http://beta.dostavista.ru/bapi/order' : 'http://dostavista.ru/bapi/order';
+	// var apiUrl = 'http://dostavista.ru/bapi/order';
+	// var apiUrl = 'http://beta.dostavista.ru/bapi/order';
+	var apiUrl = 'http://localhost';
 
 	var callbacks = {
 		onBeforeSend: null,
@@ -105,17 +100,54 @@
 
 	/**
 	 * Обрабатывает клик по кнопке, проверяет параметры и отправляет их на сервер.
+	 * Вызывает установленные колбэки в нужное время.
 	 * Сбрасывает состояние при клике по кнопке с ошибкой.
 	 * 
 	 * @param  {Object} e Объект-событие.
 	 */
 	var handleClick = function(e) {
+		e.preventDefault();
 		var button = this;
 
+		// Вызывается после того, как отработает onBeforeSend.
+		var continueClickHandling = function() {
+			// Парсим и проверям параметры. 
+			var params = _parseParams.call(button);
+			try {
+				_checkParams(params);
+			} catch (e) {
+				_error(e);
+				_setButtonState.call(button, 'error', e);
+
+				return;
+			}
+
+			// Если всё хорошо, отсылаем запрос и ждём завершения. 
+			// Обрабатываем успешное окончание или ошибку.
+			var apiCall = _sendOrder(params);
+			apiCall.done(function onAjaxDone(resJSON) {
+				if (typeof callbacks['onSendSuccess'] === 'function') {
+					callbacks['onSendSuccess'](resJSON);
+				}
+
+				// TODO вынести в какое-нибудь другое место
+				_setButtonState.call(button, 'sent', 'ID заказа в Достависте: ' + resJSON.order_id);
+			});
+
+			apiCall.fail(function onAjaxFail(jqxhr, text, error) {
+				if (typeof callbacks['onSendError'] === 'function') {
+					callbacks['onSendError'](text, error);
+				} else {
+					_error('Ошибка отправки на ' + apiUrl);
+				}
+
+				_setButtonState.call(button, 'error', 'Ошибка отправки на ' + apiUrl);
+			});
+		};
+
+		// Проверяем, была ли нажата кнопка. Если есть ошибка, сбрасываем, в противном случае ждём.
 		if (!_canSend.call(button)) {
-			console.log('cannot send');
 			if (_isErrorState.call(button)) {
-				console.log('clearing state');
 				_setButtonState.call(button);
 			}
 			return;
@@ -128,43 +160,21 @@
 
 		_setButtonState.call(button, 'sending');
 
+		// Если установлен корректный onBeforeSend, то надо дождаться его окончания.
 		if (typeof callbacks['onBeforeSend'] === 'function') {
+			var promise = callbacks['onBeforeSend'].call(button);
 
-		}
-
-		var params = _parseParams.call(button);
-		try {
-			_checkParams(params);
-		} catch (e) {
-			if (typeof callbacks['onParamsIllegal'] === 'function') {
-				callbacks['onParamsIllegal'](params, e);
+			if (typeof promise !== 'object' || typeof promise.done !== 'function' || typeof promise.fail !== 'function') {
+				_error('onBeforeSend-колбэк должен возвращать $.Deferred().promise().');
 			} else {
-				_error(e);
-				_setButtonState.call(button, 'error', e);
-
+				promise.always(function waitForOnBeforeSend() {
+					continueClickHandling();
+				});
 				return;
 			}
 		}
 
-		var apiCall = _sendOrder(params);
-		apiCall.done(function onAjaxDone(resJSON) {
-			if (typeof callbacks['onSendSuccess'] === 'function') {
-				callbacks['onSendSuccess'](resJSON);
-			}
-
-			// TODO вынести в какое-нибудь другое место
-			_setButtonState.call(button, 'sent', 'ID заказа в Достависте: ' + resJSON.order_id);
-		});
-
-		apiCall.fail(function onAjaxFail(jqxhr, text, error) {
-			if (typeof callbacks['onSendError'] === 'function') {
-				callbacks['onSendError'](text, error);
-			} else {
-				_error(text);
-			}
-
-			_setButtonState.call(button, 'error', text);
-		});
+		continueClickHandling();
 	};
 
 
@@ -200,8 +210,8 @@
 			.fail(onSendOrderFail);
 
 		setTimeout(function waitForJSONPTimeout() {
-			def.reject(null, 'Ответа нет слишком долго. Возможно, проблемы с сетью.', null);
 			xhr.abort();
+			def.reject(null, 'Ответа нет слишком долго. Возможно, проблемы с сетью.', null);
 		}, jsonpTimeout);
 
 		return def.promise();
