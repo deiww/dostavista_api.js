@@ -4,28 +4,12 @@
 	<meta charset="UTF-8">
 	<title>Test dostavista API</title>
 
-	<style>
-		.DSTA_button {
-			display: inline;
-			display: inline-block;
-			zoom: 1;
-			margin: 0;
-			padding: 7px 20px;
-			font: normal 16px/1 Arial, Helvetica, sans-serif;
-			background: #ba2270;
-			color: white;
-			-webkit-border-radius: 5px;
-			-moz-border-radius: 5px;
-			border-radius: 5px;
-			-webkit-box-shadow: 0 2px 0 #591036;
-			-moz-box-shadow: 0 2px 0 #591036;
-			box-shadow: 0 2px 0 #591036;
-			cursor: pointer;
-		}
-	</style>
+	<link rel="stylesheet" href="dostavista_api.css">
 </head>
 <body>
-	<span class="DSTA_button" 
+	<!-- <span class="DostavistaButton"></span> -->
+
+	<span class="DostavistaButton" 
 		dsta-matter="Документы"
 		dsta-insurance="200"
 		dsta-address="ул. Полянка, 27, к 3 стр 5, кв 127"
@@ -36,7 +20,7 @@
 		dsta-weight="8"
 		dsta-taking="1200",
 		dsta-client_order_id="АА-122910"
-	>В Достависту</span>
+	></span>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="dostavista_api.js"></script>
@@ -44,6 +28,15 @@
 		DostavistaApi.setClient({
 			client_id: 13407,
 			token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
+		});
+
+		DostavistaApi.setCallback('onParamsIllegal', function(params, error) {
+			console.log(params);
+			console.log(error);
+		});
+
+		DostavistaApi.setCallback('onSendSuccess', function(result) {
+			console.log(result);
 		});
 	</script>
 </body>
