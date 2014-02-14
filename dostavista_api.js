@@ -27,6 +27,7 @@
 	var jsonpTimeout = 5 * 1000;
 
 	var apiUrl = testOnBeta ? 'http://beta.dostavista.ru/bapi/order' : 'http://dostavista.ru/bapi/order';
+	// var apiUrl = 'http://localhost';
 
 	var callbacks = {
 		onBeforeSend: null,
