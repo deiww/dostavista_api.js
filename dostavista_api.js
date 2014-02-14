@@ -6,10 +6,14 @@
  * @param  {Object} global window
  * @param  {Object} document document
  * @param  {Function} $ jQuery
+ * @param  {Boolean} Использовать ли хост beta.dostavista.ru
+ *
+ * @version 0.9.0
  * 
  * @author Oleg Gromov <mail@oleggromov.com>
+ * https://github.com/dostavista/dostavista_api.js
  */
-(function DostavistaAPIClient(global, document, $) {
+(function DostavistaAPIClient(global, document, $, testOnBeta) {
 	/**
 	 * Отключает ВСЕ сообщения плагина.
 	 * @type {Boolean}
@@ -22,9 +26,7 @@
 	 */
 	var jsonpTimeout = 5 * 1000;
 
-	// var apiUrl = 'http://dostavista.ru/bapi/order';
-	// var apiUrl = 'http://beta.dostavista.ru/bapi/order';
-	var apiUrl = 'http://localhost';
+	var apiUrl = testOnBeta ? 'http://beta.dostavista.ru/bapi/order' : 'http://dostavista.ru/bapi/order';
 
 	var callbacks = {
 		onBeforeSend: null,
@@ -345,4 +347,4 @@
 		setClient: setClient,
 		setCallback: setCallback
 	};
-})(window, document, jQuery);
+})(window, document, jQuery, true);

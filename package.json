@@ -1,0 +1,27 @@
+{
+	"name": "dostavista_api",
+	"version": "0.9.0",
+	"author": {
+		"name": "Oleg Gromov",
+		"email": "mail@oleggromov.com",
+		"url": "http://oleggromov.com"
+	},
+	"description": "Модуль для AJAX-работы с API Dostavista.ru",
+	"homepage": "https://github.com/dostavista/dostavista_api.js",
+	"bugs": { 
+		"url" : "https://github.com/dostavista/dostavista_api.js/issues",
+		"email" : "mail@oleggromov.com"
+	},
+	"repository" : { 
+		"type" : "git", 
+		"url" : "https://github.com/dostavista/dostavista_api.js"
+	},
+	"dependencies": {
+		"jquery": ">1.8.0"
+	},
+	"devDependencies": {
+		"grunt": "~0.4.2",
+		"grunt-contrib-uglify": "~0.3.2",
+		"grunt-csso": "~0.5.3"
+	}
+}

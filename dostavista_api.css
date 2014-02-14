@@ -1,3 +1,9 @@
+/*
+ * CSS с оформлением, надписями и состояниями кнопок для Dostavista API.
+ *
+ * @author Oleg Gromov <mail@oleggromov.com>
+ * https://github.com/dostavista/dostavista_api.js
+ */
 .DostavistaButton {
 	border: none;
 	outline: none;

@@ -33,7 +33,7 @@
 		DostavistaApi.setCallback('onBeforeSend', function(result) {
 			var def = $.Deferred();
 
-			def.reject();
+			def.resolve();
 
 			return def.promise();
 		});
