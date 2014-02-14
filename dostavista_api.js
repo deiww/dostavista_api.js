@@ -222,14 +222,17 @@
 
 	/**
 	 * Достаёт из DOM-ноды все аргументы, валидирует, преобразовывает в нужные типы и раскладывает в правильную структуру.
-	 * @TODO сделать нормальный парсинг телефона, даты
 	 * 
 	 * @return {Object} Хэш, в котором существующим в разметке ключам соответствуют их значения.
 	 */
 	var _parseParams = function() {
 		var toNumber = function(val) { return Number(val); }
-		var toDate = function(val) { return Date(val); }
-		var toPhone = function(val) { return val; }
+		// Оставляет 10 последних цифр в телефоне, вырезая всё лишнее.
+		var toPhone = function(val) { 
+			val = val.replace(/[^\d]/g, '');
+			val = val.substr(val.length-10, val.length);
+			return val; 
+		}
 
 		var getParamsFromDomAttrs = function(attrs, domNode) {
 			var params = {};
@@ -255,8 +258,8 @@
 			{ name: "dsta-weight", parse: toNumber },
 			{ name: "dsta-phone", parse: toPhone },
 			{ name: "dsta-contact_person" },
-			{ name: "dsta-required_time", parse: toDate },
-			{ name: "dsta-required_time_start", parse: toDate },
+			{ name: "dsta-required_time" },
+			{ name: "dsta-required_time_start" },
 			{ name: "dsta-address" }
 		];
 
@@ -276,20 +279,37 @@
 
 	/**
 	 * Проверяет корректность параметров и бросает исключение, если что-то не так.
-	 * @TODO сделать нормальную проверку телефона, даты.
 	 * 
 	 * @param  {Object} params Хэш с параметрами, полученный от _parseParams.
 	 * @return {[type]}        [description]
 	 */
 	var _checkParams = function(params) {
+		var datetime = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
 		var error = "";
 
-		if (!params.matter) error += 'Не задан параметр matter.\n';
-		if (!params.point[0]['address']) error += 'Не задан параметр point[0].address.\n';
-		if (!params.point[0]['phone']) error += 'Не задан параметр point[0].phone.\n';
-		if (!params.point[0]['required_time_start']) error += 'Не задан параметр point[0].time_start.\n';
-		if (!params.point[0]['required_time']) error += 'Не задан параметр point[0].time.\n';
-		if (!params.point[0]['weight']) error += 'Не задан параметр point[0].weight.\n';
+		if (!params.matter){
+			error += 'Не задан параметр matter.\n';
+		}
+			
+		if (!params.point[0]['address']) {
+			error += 'Не задан параметр point[0].address.\n';
+		}
+
+		if (!params.point[0]['phone'] || params.point[0]['phone'].length !== 10) {
+			error += 'Параметр point[0].phone должен состоять из 10 цифр.\n';
+		}
+
+		if (!datetime.test(params.point[0]['required_time_start'])) {
+			error += 'Параметр point[0].time_start должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
+		}
+
+		if (!datetime.test(params.point[0]['required_time'])) {
+			error += 'Параметр point[0].time должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
+		}
+
+		if (!params.point[0]['weight']) {
+			error += 'Не задан параметр point[0].weight.\n';
+		}
 
 		if (error) {
 			throw error;
