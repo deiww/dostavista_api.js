@@ -127,6 +127,7 @@
 
 			// Если всё хорошо, отсылаем запрос и ждём завершения. 
 			// Обрабатываем успешное окончание или ошибку.
+			// @TODO обработка ошибок API!
 			var apiCall = _sendOrder(params);
 			apiCall.done(function onAjaxDone(resJSON) {
 				if (typeof callbacks['onSendSuccess'] === 'function') {
@@ -139,7 +140,7 @@
 
 			apiCall.fail(function onAjaxFail(jqxhr, text, error) {
 				if (typeof callbacks['onSendError'] === 'function') {
-					callbacks['onSendError'](text, error);
+					callbacks['onSendError'](jqxhr, text, error);
 				} else {
 					_error('Ошибка отправки на ' + apiUrl);
 				}
@@ -241,7 +242,7 @@
 			for (var i = 0, max = attrs.length; i < max; i++) {
 				paramValue = $(domNode).attr(attrs[i].name);
 				if (paramValue) {
-					params[attrs[i].name.replace('dsta-', '')] = attrs[i].parse ? attrs[i].parse(paramValue) : paramValue;
+					params[attrs[i].name.replace(/dsta-(\w*\d{1}_)?/, '')] = attrs[i].parse ? attrs[i].parse(paramValue) : paramValue;
 				}
 			}
 
@@ -253,18 +254,28 @@
 			{ name: "dsta-insurance", parse: toNumber }
 		];
 
-		var pointAttrs = [
-			{ name: "dsta-client_order_id" },
-			{ name: "dsta-taking", parse: toNumber },
-			{ name: "dsta-weight", parse: toNumber },
-			{ name: "dsta-phone", parse: toPhone },
-			{ name: "dsta-contact_person" },
-			{ name: "dsta-required_time" },
-			{ name: "dsta-required_time_start" },
-			{ name: "dsta-address" }
+		var point0Attrs = [
+			{ name: "dsta-point0_client_order_id" },
+			{ name: "dsta-point0_taking", parse: toNumber },
+			{ name: "dsta-point0_weight", parse: toNumber },
+			{ name: "dsta-point0_phone", parse: toPhone },
+			{ name: "dsta-point0_contact_person" },
+			{ name: "dsta-point0_required_time" },
+			{ name: "dsta-point0_required_time_start" },
+			{ name: "dsta-point0_address" }
 		];
 
-		// Api получает массив точек, но мы передаём только одну
+		var point1Attrs = [
+			{ name: "dsta-point1_taking", parse: toNumber },
+			{ name: "dsta-point1_weight", parse: toNumber },
+			{ name: "dsta-point1_phone", parse: toPhone },
+			{ name: "dsta-point1_contact_person" },
+			{ name: "dsta-point1_required_time" },
+			{ name: "dsta-point1_required_time_start" },
+			{ name: "dsta-point1_address" }
+		];
+
+		// Api получает массив точек, где point[0] — точка забора.
 		var params = {
 			point: [
 				{}
@@ -272,7 +283,8 @@
 		};
 
 		params = $.extend(params, getParamsFromDomAttrs(attrs, this));
-		params.point[0] = getParamsFromDomAttrs(pointAttrs, this);
+		params.point[0] = getParamsFromDomAttrs(point0Attrs, this);
+		params.point[1] = getParamsFromDomAttrs(point1Attrs, this);
 
 		return params;
 	};
@@ -291,25 +303,27 @@
 		if (!params.matter){
 			error += 'Не задан параметр matter.\n';
 		}
-			
-		if (!params.point[0]['address']) {
-			error += 'Не задан параметр point[0].address.\n';
-		}
+		
+		for (var i = 0, max = params.point.length; i < max; i++) {
+			if (!params.point[i]['address']) {
+				error += 'Не задан параметр point[' + i + '].address.\n';
+			}
 
-		if (!params.point[0]['phone'] || params.point[0]['phone'].length !== 10) {
-			error += 'Параметр point[0].phone должен состоять из 10 цифр.\n';
-		}
+			if (!params.point[i]['phone'] || params.point[i]['phone'].length !== 10) {
+				error += 'Параметр point[' + i + '].phone должен состоять из 10 цифр.\n';
+			}
 
-		if (!datetime.test(params.point[0]['required_time_start'])) {
-			error += 'Параметр point[0].time_start должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
-		}
+			if (!datetime.test(params.point[i]['required_time_start'])) {
+				error += 'Параметр point[' + i + '].time_start должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
+			}
 
-		if (!datetime.test(params.point[0]['required_time'])) {
-			error += 'Параметр point[0].time должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
-		}
+			if (!datetime.test(params.point[i]['required_time'])) {
+				error += 'Параметр point[' + i + '].time должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
+			}
 
-		if (!params.point[0]['weight']) {
-			error += 'Не задан параметр point[0].weight.\n';
+			if (!params.point[i]['weight']) {
+				error += 'Не задан параметр point[' + i + '].weight.\n';
+			}
 		}
 
 		if (error) {

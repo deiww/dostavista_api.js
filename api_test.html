@@ -12,14 +12,22 @@
 	<span class="DostavistaButton" 
 		dsta-matter="Проверочная доставка"
 		dsta-insurance="13000"
-		dsta-address="бул. Невероятных размеров, 27"
-		dsta-required_time_start="2014-02-15 18:00:00"
-		dsta-required_time="2014-02-15 20:00:00"
-		dsta-contact_person="Олег"
-		dsta-phone="+7 (915) 123-03-00"
-		dsta-weight="1"
-		dsta-taking="4500",
-		dsta-client_order_id="9812"
+
+		dsta-point0_address="ул. Новокосинская улица, 13"
+		dsta-point0_required_time_start="2013-12-30 18:00:00"
+		dsta-point0_required_time="2013-12-30 20:00:00"
+		dsta-point0_contact_person="Контактное лицо магазина"
+		dsta-point0_phone="+7 (923) 000-00-00"
+		dsta-point0_weight="4"
+		dsta-point0_client_order_id="9812"
+
+		dsta-point1_address="улица Солянка, 1/2 "
+		dsta-point1_required_time_start="2014-02-15 18:00:00"
+		dsta-point1_required_time="2014-02-15 20:00:00"
+		dsta-point1_contact_person="Олег"
+		dsta-point1_phone="+7 (915) 123-03-00"
+		dsta-point1_weight="4"
+		dsta-point1_taking="4500"
 	></span>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -30,13 +38,13 @@
 			token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
 		});
 
-		DostavistaApi.setCallback('onBeforeSend', function(result) {
-			var def = $.Deferred();
+		// DostavistaApi.setCallback('onBeforeSend', function(result) {
+		// 	var def = $.Deferred();
 
-			def.resolve();
+		// 	def.resolve();
 
-			return def.promise();
-		});
+		// 	return def.promise();
+		// });
 
 		DostavistaApi.setCallback('onSendSuccess', function(result) {
 			console.log('Set message in CMS');
