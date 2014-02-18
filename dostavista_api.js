@@ -36,6 +36,18 @@
 	};
 	var authParams = {};
 
+	var apiErrors = {
+		'20': 'Уже откликнулся на заказ',
+		'22': 'Аукцион завершен, поздно делать ставки',
+		'23': 'Невозможно отозвать ставку: ее нет',
+		'24': 'Слишком большая ставка',
+		'64': 'Неизвестная ошибка',
+		'128': 'Попытка вызова API несуществующей версии',
+		'1024': 'Неверный метод запроса (GET/POST)',
+		'2048': 'Неверный идентификатор клиента',
+		'4096': 'Неверный токен доступа'
+	};
+
 	/**
 	 * Выводит сообщение об ошибке в dev-консоль, если она доступна, либо делает alert.
 	 * При noDebug == true ничего не делает вообще.
@@ -116,6 +128,7 @@
 		var continueClickHandling = function() {
 			// Парсим и проверям параметры. 
 			var params = _parseParams.call(button);
+
 			try {
 				_checkParams(params);
 			} catch (e) {
@@ -125,11 +138,32 @@
 				return;
 			}
 
+			// При ошибке вызывает колбэк и задаёт правильное состояние кнопки.
+			var processError = function(jqxhr, text, error, message) {
+				if (typeof callbacks['onSendError'] === 'function') {
+					callbacks['onSendError'](jqxhr, text, error);
+				} else {
+					_error(message);
+				}
+
+				_setButtonState.call(button, 'error', message);
+			};
+
 			// Если всё хорошо, отсылаем запрос и ждём завершения. 
 			// Обрабатываем успешное окончание или ошибку.
-			// @TODO обработка ошибок API!
 			var apiCall = _sendOrder(params);
 			apiCall.done(function onAjaxDone(resJSON) {
+				if (resJSON.error_code) {
+					var errMsg = [];
+
+					for (var i = 0, max = resJSON.error_code.length; i < max; i++) {
+						errMsg.push(resJSON.error_code[i] + ': ' + apiErrors[resJSON.error_code[i]]);
+					}
+
+					processError(null, null, null, errMsg.join('\n'));
+					return;
+				}
+
 				if (typeof callbacks['onSendSuccess'] === 'function') {
 					callbacks['onSendSuccess'](resJSON);
 				}
@@ -139,13 +173,7 @@
 			});
 
 			apiCall.fail(function onAjaxFail(jqxhr, text, error) {
-				if (typeof callbacks['onSendError'] === 'function') {
-					callbacks['onSendError'](jqxhr, text, error);
-				} else {
-					_error('Ошибка отправки на ' + apiUrl);
-				}
-
-				_setButtonState.call(button, 'error', 'Ошибка отправки на ' + apiUrl);
+				processError(jqxhr, text, error, 'Ошибка отправки на ' + apiUrl);
 			});
 		};
 
@@ -314,11 +342,11 @@
 			}
 
 			if (!datetime.test(params.point[i]['required_time_start'])) {
-				error += 'Параметр point[' + i + '].time_start должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
+				error += 'Параметр point[' + i + '].required_time_start должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
 			}
 
 			if (!datetime.test(params.point[i]['required_time'])) {
-				error += 'Параметр point[' + i + '].time должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
+				error += 'Параметр point[' + i + '].required_time должен быть в формате YYYY-MM-DD HH:MM:SS.\n';
 			}
 
 			if (!params.point[i]['weight']) {
@@ -360,7 +388,7 @@
 	 * @return {Boolean}
 	 */
 	var _canSend = function() {
-		return !$(this).hasClass('DostavistaButton_disabled');
+		return !($(this).hasClass('DostavistaButton_disabled') || $(this).hasClass('DostavistaButton_sent'));
 	};
 
 
