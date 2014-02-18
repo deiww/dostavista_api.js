@@ -82,7 +82,7 @@ JS-клиент предназначен для подключения к адм
 
 	```html
 	<script>
-		DostavistaApi.setCallback('onSendSuccess', function(result) {
+		DostavistaApi.setCallback('onSendSuccess', function(result, button) {
 			alert('Заказ ' + result.order_id + ' доставлен');
 		});
 	</script>
@@ -93,7 +93,7 @@ JS-клиент предназначен для подключения к адм
 	| Название | Параметры | Описание |
 	|----------|-----------|----------|
 	| onBeforeSend |  | Вызывается до отправки данных и парсинга параметров. Можно использовать, чтобы добавить отсутствующие параметры. Должен возвращать `jQuery.Deferred.promise()` — см. код примера `api_test.html`! |
-	| onSendSuccess | result | Выполняется, если заказ отправлен в Достависту. Получает result — объект с ответом API. |
+	| onSendSuccess | result, button | Выполняется, если заказ отправлен в Достависту. Получает result (объект с ответом API) и button (DOM-ноду с кнопкой). |
 	| onSendError | jqxhr, text, error | Выполняется, если при отправке произошла ошибка. Получает параметры, идентичные методу $.ajax().fail(). |
 
 

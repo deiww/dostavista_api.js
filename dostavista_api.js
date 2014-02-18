@@ -3,7 +3,7 @@
  * Использует в качесте транспорта jQuery.ajax(), результат отдаётся в JSONP.
  * Зависит от jQuery 1.8 и старше.
  * 
- * @param  {Object} global window
+ * @param  {Object} exports window
  * @param  {Object} document document
  * @param  {Function} $ jQuery
  * @param  {Boolean} Использовать ли хост beta.dostavista.ru
@@ -13,7 +13,7 @@
  * @author Oleg Gromov <mail@oleggromov.com>
  * https://github.com/dostavista/dostavista_api.js
  */
-(function DostavistaAPIClient(global, document, $, testOnBeta) {
+(function DostavistaAPIClient(exports, document, $, testOnBeta) {
 	/**
 	 * Отключает ВСЕ сообщения плагина.
 	 * @type {Boolean}
@@ -165,7 +165,7 @@
 				}
 
 				if (typeof callbacks['onSendSuccess'] === 'function') {
-					callbacks['onSendSuccess'](resJSON);
+					callbacks['onSendSuccess'](resJSON, button);
 				}
 
 				// TODO вынести в какое-нибудь другое место
@@ -406,7 +406,7 @@
 	$(document).on('click', '.DostavistaButton', handleClick);
 
 	// Глобально доступный интерфейс.
-	global.DostavistaApi = {
+	exports.DostavistaApi = {
 		setClient: setClient,
 		setCallback: setCallback
 	};

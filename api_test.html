@@ -46,8 +46,10 @@
 		// 	return def.promise();
 		// });
 
-		DostavistaApi.setCallback('onSendSuccess', function(result) {
+		DostavistaApi.setCallback('onSendSuccess', function(result, button) {
 			console.log('Set message in CMS');
+			console.log(button);
+			console.log(result);
 		});
 	</script>
 </body>
