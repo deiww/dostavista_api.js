@@ -25,9 +25,10 @@
 	 * @type {Number}
 	 */
 	var jsonpTimeout = 5 * 1000;
+	var jsonpTimer;
 
 	var apiUrl = testOnBeta ? 'http://beta.dostavista.ru/bapi/order' : 'http://dostavista.ru/bapi/order';
-	// var apiUrl = 'http://localhost';
+	var apiUrl = 'http://localhost';
 
 	var callbacks = {
 		onBeforeSend: null,
@@ -237,11 +238,16 @@
 			def.reject(jqxhr, text, error);
 		};
 
+		var removeTimer = function() {
+			clearTimeout(jsonpTimer);
+		};
+
 		var xhr = $.ajax(sendParams)
 			.done(onSendOrderDone)
-			.fail(onSendOrderFail);
+			.fail(onSendOrderFail)
+			.always(removeTimer);
 
-		setTimeout(function waitForJSONPTimeout() {
+		jsonpTimer = setTimeout(function waitForJSONPTimeout() {
 			xhr.abort();
 			def.reject(null, 'Ответа нет слишком долго. Возможно, проблемы с сетью.', null);
 		}, jsonpTimeout);
