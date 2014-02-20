@@ -18,7 +18,7 @@
 	 * Отключает ВСЕ сообщения плагина.
 	 * @type {Boolean}
 	 */
-	var noDebug = false;
+	var noDebug = true;
 
 	/**
 	 * Таймаут ответа от сервера, в секундах * 1000 мс.
@@ -94,6 +94,16 @@
 	 */
 	var setTestOnBeta = function(state) {
 		testOnBeta = state;
+	};
+
+
+	/**
+	 * Переключает вывод отладочных сообщений в зависимости от параметра.
+	 * 
+	 * @param {Boolean} state True включает отладку.
+	 */
+	var setDebug = function(state) {
+		noDebug = !state;
 	};
 
 
@@ -426,6 +436,7 @@
 	exports.DostavistaApi = {
 		setClient: setClient,
 		setCallback: setCallback,
-		setTestOnBeta: setTestOnBeta
+		setTestOnBeta: setTestOnBeta,
+		setDebug: setDebug
 	};
 })(window, document, jQuery);
