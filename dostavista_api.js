@@ -13,7 +13,7 @@
  * @author Oleg Gromov <mail@oleggromov.com>
  * https://github.com/dostavista/dostavista_api.js
  */
-(function DostavistaAPIClient(exports, document, $, testOnBeta) {
+(function DostavistaAPIClient(exports, document, $) {
 	/**
 	 * Отключает ВСЕ сообщения плагина.
 	 * @type {Boolean}
@@ -27,8 +27,9 @@
 	var jsonpTimeout = 5 * 1000;
 	var jsonpTimer;
 
-	var apiUrl = testOnBeta ? 'http://beta.dostavista.ru/bapi/order' : 'http://dostavista.ru/bapi/order';
-	var apiUrl = 'http://localhost';
+	var apiUrl = 'http://dostavista.ru/bapi/order';
+	var apiUrlBeta = 'http://beta.dostavista.ru/bapi/order';
+	var testOnBeta = false;
 
 	var callbacks = {
 		onBeforeSend: null,
@@ -83,6 +84,16 @@
 	var setClient = function(params) {
 		authParams.client_id = params.client_id || false;
 		authParams.token = params.token || false;
+	};
+
+
+	/**
+	 * Меняет URL API на бету в зависимости от параметра.
+	 * 
+	 * @param {Boolean} state Должен быть true, чтобы тестировать на бете
+	 */
+	var setTestOnBeta = function(state) {
+		testOnBeta = state;
 	};
 
 
@@ -224,7 +235,7 @@
 
 		var sendParams = {
 			data: params,
-			url: apiUrl,
+			url: testOnBeta ? apiUrlBeta : apiUrl,
 			type: 'post',
 			dataType: 'jsonp',
 			cache: false
@@ -414,6 +425,7 @@
 	// Глобально доступный интерфейс.
 	exports.DostavistaApi = {
 		setClient: setClient,
-		setCallback: setCallback
+		setCallback: setCallback,
+		setTestOnBeta: setTestOnBeta
 	};
-})(window, document, jQuery, true);
+})(window, document, jQuery);
