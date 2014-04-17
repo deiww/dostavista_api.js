@@ -2,14 +2,14 @@
  * Модуль для AJAX-работы с API Dostavista.ru.
  * Использует в качесте транспорта jQuery.ajax(), результат отдаётся в JSONP.
  * Зависит от jQuery 1.8 и старше.
- * 
+ *
  * @param  {Object} exports window
  * @param  {Object} document document
  * @param  {Function} $ jQuery
  * @param  {Boolean} Использовать ли хост beta.dostavista.ru
  *
  * @version 0.9.0
- * 
+ *
  * @author Oleg Gromov <mail@oleggromov.com>
  * https://github.com/dostavista/dostavista_api.js
  */
@@ -53,12 +53,12 @@
 	/**
 	 * Выводит сообщение об ошибке в dev-консоль, если она доступна, либо делает alert.
 	 * При noDebug == true ничего не делает вообще.
-	 * 
+	 *
 	 * @param  {String} message Строка с сообщение об ошибке.
 	 */
 	var _error = function(message) {
 		var fallback = function(message) { alert('dostavista_api.js: ' + message); };
-		
+
 		if (noDebug) return;
 
 		if (console) {
@@ -75,9 +75,14 @@
 		return;
 	}
 
+
+	var setApiUrl = function(url) {
+		apiUrl = url;
+	};
+
 	/**
 	 * Сохраняет параметры для доступа к API.
-	 * 
+	 *
 	 * @param  	{Object} params	Параметры clientId, token.
 	 * @return 	{Boolean} true, если всё в порядке.
 	 */
@@ -89,7 +94,7 @@
 
 	/**
 	 * Меняет URL API на бету в зависимости от параметра.
-	 * 
+	 *
 	 * @param {Boolean} state Должен быть true, чтобы тестировать на бете
 	 */
 	var setTestOnBeta = function(state) {
@@ -99,7 +104,7 @@
 
 	/**
 	 * Переключает вывод отладочных сообщений в зависимости от параметра.
-	 * 
+	 *
 	 * @param {Boolean} state True включает отладку.
 	 */
 	var setDebug = function(state) {
@@ -109,7 +114,7 @@
 
 	/**
 	 * Добавляет колбэк типа type, который берётся из ключей хэша callbacks.
-	 * 
+	 *
 	 * @param  {Strong}   type Строка-тип колбека
 	 * @param  {Function} fn   Колбэк
 	 * @return {Boolean}       True, если колбэк сохранён
@@ -139,7 +144,7 @@
 	 * Обрабатывает клик по кнопке, проверяет параметры и отправляет их на сервер.
 	 * Вызывает установленные колбэки в нужное время.
 	 * Сбрасывает состояние при клике по кнопке с ошибкой.
-	 * 
+	 *
 	 * @param  {Object} e Объект-событие.
 	 */
 	var handleClick = function(e) {
@@ -148,7 +153,7 @@
 
 		// Вызывается после того, как отработает onBeforeSend.
 		var continueClickHandling = function() {
-			// Парсим и проверям параметры. 
+			// Парсим и проверям параметры.
 			var params = _parseParams.call(button);
 
 			try {
@@ -171,7 +176,7 @@
 				_setButtonState.call(button, 'error', message);
 			};
 
-			// Если всё хорошо, отсылаем запрос и ждём завершения. 
+			// Если всё хорошо, отсылаем запрос и ждём завершения.
 			// Обрабатываем успешное окончание или ошибку.
 			var apiCall = _sendOrder(params);
 			apiCall.done(function onAjaxDone(resJSON) {
@@ -235,7 +240,7 @@
 	/**
 	 * Делает AJAX-запрос к API Достависты, получая результат в JSONP.
 	 * Использует свой Deferred для обработки ошибок, чтобы делать promise.reject() при таймауте.
-	 * 
+	 *
 	 * @param  {Object} params Хэш с обработанными параметрами
 	 * @return {Promise} Разрешается, когда приходит ответ от сервера.
 	 */
@@ -250,7 +255,7 @@
 			dataType: 'jsonp',
 			cache: false
 		};
-		
+
 		var onSendOrderDone = function(result) {
 			def.resolve(result);
 		};
@@ -276,19 +281,23 @@
 		return def.promise();
 	};
 
+	var _parseMultiParams = function(parentDomNode) {
+
+	}
+
 
 	/**
 	 * Достаёт из DOM-ноды все аргументы, валидирует, преобразовывает в нужные типы и раскладывает в правильную структуру.
-	 * 
+	 *
 	 * @return {Object} Хэш, в котором существующим в разметке ключам соответствуют их значения.
 	 */
 	var _parseParams = function() {
 		var toNumber = function(val) { return Number(val); }
 		// Оставляет 10 последних цифр в телефоне, вырезая всё лишнее.
-		var toPhone = function(val) { 
+		var toPhone = function(val) {
 			val = val.replace(/[^\d]/g, '');
 			val = val.substr(val.length-10, val.length);
-			return val; 
+			return val;
 		}
 
 		var getParamsFromDomAttrs = function(attrs, domNode) {
@@ -296,6 +305,9 @@
 			var paramValue = null;
 			for (var i = 0, max = attrs.length; i < max; i++) {
 				paramValue = $(domNode).attr(attrs[i].name);
+				if (!paramValue && ('required' in attrs[i])) {
+					return null;
+				}
 				if (paramValue) {
 					params[attrs[i].name.replace(/dsta-(\w*\d{1}_)?/, '')] = attrs[i].parse ? attrs[i].parse(paramValue) : paramValue;
 				}
@@ -309,27 +321,6 @@
 			{ name: "dsta-insurance", parse: toNumber }
 		];
 
-		var point0Attrs = [
-			{ name: "dsta-point0_client_order_id" },
-			{ name: "dsta-point0_taking", parse: toNumber },
-			{ name: "dsta-point0_weight", parse: toNumber },
-			{ name: "dsta-point0_phone", parse: toPhone },
-			{ name: "dsta-point0_contact_person" },
-			{ name: "dsta-point0_required_time" },
-			{ name: "dsta-point0_required_time_start" },
-			{ name: "dsta-point0_address" }
-		];
-
-		var point1Attrs = [
-			{ name: "dsta-point1_taking", parse: toNumber },
-			{ name: "dsta-point1_weight", parse: toNumber },
-			{ name: "dsta-point1_phone", parse: toPhone },
-			{ name: "dsta-point1_contact_person" },
-			{ name: "dsta-point1_required_time" },
-			{ name: "dsta-point1_required_time_start" },
-			{ name: "dsta-point1_address" }
-		];
-
 		// Api получает массив точек, где point[0] — точка забора.
 		var params = {
 			point: [
@@ -338,8 +329,26 @@
 		};
 
 		params = $.extend(params, getParamsFromDomAttrs(attrs, this));
-		params.point[0] = getParamsFromDomAttrs(point0Attrs, this);
-		params.point[1] = getParamsFromDomAttrs(point1Attrs, this);
+
+		for (var i=0; i<10; i++) {
+			var prefix = 'dsta-point'+i+'_';
+			var point = getParamsFromDomAttrs([
+				{ name: prefix+"address", required: true },
+				{ name: prefix+"client_order_id" },
+				{ name: prefix+"taking", parse: toNumber },
+				{ name: prefix+"weight", parse: toNumber },
+				{ name: prefix+"phone", parse: toPhone },
+				{ name: prefix+"contact_person" },
+				{ name: prefix+"required_time" },
+				{ name: prefix+"required_time_start" }
+			], this);
+			if (point) {
+				params.point[i] = point;
+			}
+			else {
+				break;
+			}
+		}
 
 		return params;
 	};
@@ -347,7 +356,7 @@
 
 	/**
 	 * Проверяет корректность параметров и бросает исключение, если что-то не так.
-	 * 
+	 *
 	 * @param  {Object} params Хэш с параметрами, полученный от _parseParams.
 	 * @return {[type]}        [description]
 	 */
@@ -358,7 +367,7 @@
 		if (!params.matter){
 			error += 'Не задан параметр matter.\n';
 		}
-		
+
 		for (var i = 0, max = params.point.length; i < max; i++) {
 			if (!params.point[i]['address']) {
 				error += 'Не задан параметр point[' + i + '].address.\n';
@@ -389,7 +398,7 @@
 
 	/**
 	 * Устанавливает состояние кнопки — CSS-класс, disabled и title.
-	 * 
+	 *
 	 * @param {String} state Одно из ['sending', 'sent', 'error']
 	 */
 	var _setButtonState = function(state, title) {
@@ -411,7 +420,7 @@
 
 	/**
 	 * Определяет, можно ли нажимать на кнопку по наличию disabled-модификатора.
-	 * 
+	 *
 	 * @return {Boolean}
 	 */
 	var _canSend = function() {
@@ -421,7 +430,7 @@
 
 	/**
 	 * Сообщает, находится ли кнопка в состоянии ошибки.
-	 * 
+	 *
 	 * @return {Boolean} Ошибка или нет
 	 */
 	var _isErrorState = function() {
@@ -434,6 +443,7 @@
 
 	// Глобально доступный интерфейс.
 	exports.DostavistaApi = {
+		setApiUrl: setApiUrl,
 		setClient: setClient,
 		setCallback: setCallback,
 		setTestOnBeta: setTestOnBeta,
