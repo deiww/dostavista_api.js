@@ -238,6 +238,106 @@
 
 
 	/**
+	 * Обрабатывает клик по кнопке, проверяет параметры и отправляет их на сервер.
+	 * Вызывает установленные колбэки в нужное время.
+	 * Сбрасывает состояние при клике по кнопке с ошибкой.
+	 *
+	 * @param  {Object} e Объект-событие.
+	 */
+	var handleClickMulti = function(e) {
+		e.preventDefault();
+		var button = this;
+		var parentDomNode = $(button).closest('.DostavistaCombo');
+		var nodes = $('.DostavistaComboCheckbox:checked', parentDomNode);
+
+		// Вызывается после того, как отработает onBeforeSend.
+		var continueClickHandling = function() {
+			// Парсим и проверям параметры.
+			var params = _parseComboParams(nodes);
+
+			try {
+				_checkParams(params);
+			} catch (e) {
+				_error(e);
+				_setComboButtonState.call(button, 'error', e);
+
+				return;
+			}
+
+			// При ошибке вызывает колбэк и задаёт правильное состояние кнопки.
+			var processError = function(jqxhr, text, error, message) {
+				if (typeof callbacks['onSendError'] === 'function') {
+					callbacks['onSendError'](jqxhr, text, error);
+				} else {
+					_error(message);
+				}
+
+				_setComboButtonState.call(button, 'error', message);
+			};
+
+			// Если всё хорошо, отсылаем запрос и ждём завершения.
+			// Обрабатываем успешное окончание или ошибку.
+			var apiCall = _sendOrder(params);
+			apiCall.done(function onAjaxDone(resJSON) {
+				if (resJSON.error_code) {
+					var errMsg = [];
+
+					for (var i = 0, max = resJSON.error_code.length; i < max; i++) {
+						errMsg.push(resJSON.error_code[i] + ': ' + apiErrors[resJSON.error_code[i]]);
+					}
+
+					processError(null, null, null, errMsg.join('\n'));
+					return;
+				}
+
+				if (typeof callbacks['onSendSuccess'] === 'function') {
+					callbacks['onSendSuccess'](resJSON, nodes);
+				}
+
+				// TODO вынести в какое-нибудь другое место
+				_setComboButtonState.call(button, 'sent', 'ID заказа в Достависте: ' + resJSON.order_id);
+				nodes.attr('disabled','disabled').removeProp('checked');
+			});
+
+			apiCall.fail(function onAjaxFail(jqxhr, text, error) {
+				processError(jqxhr, text, error, 'Ошибка отправки на ' + apiUrl);
+			});
+		};
+
+		// Проверяем, была ли нажата кнопка. Если есть ошибка, сбрасываем, в противном случае ждём.
+		if (!_canSend.call(button)) {
+			if (_isErrorState.call(button)) {
+				_setComboButtonState.call(button);
+			}
+			return;
+		}
+
+		if (!authParams.client_id || !authParams.token) {
+			_error('Установите clientId и token сразу после подключения плагина.');
+			return;
+		}
+
+		_setComboButtonState.call(button, 'sending');
+
+		// Если установлен корректный onBeforeSend, то надо дождаться его окончания.
+		if (typeof callbacks['onBeforeSend'] === 'function') {
+			var promise = callbacks['onBeforeSend'].call(button);
+
+			if (typeof promise !== 'object' || typeof promise.done !== 'function' || typeof promise.fail !== 'function') {
+				_error('onBeforeSend-колбэк должен возвращать $.Deferred().promise().');
+			} else {
+				promise.always(function waitForOnBeforeSend() {
+					continueClickHandling();
+				});
+				return;
+			}
+		}
+
+		continueClickHandling();
+	};
+
+
+	/**
 	 * Делает AJAX-запрос к API Достависты, получая результат в JSONP.
 	 * Использует свой Deferred для обработки ошибок, чтобы делать promise.reject() при таймауте.
 	 *
@@ -280,10 +380,6 @@
 
 		return def.promise();
 	};
-
-	var _parseMultiParams = function(parentDomNode) {
-
-	}
 
 
 	/**
@@ -353,6 +449,34 @@
 		return params;
 	};
 
+	var _parseComboParams = function(domNodes) {
+		var multiParams = {
+			matter:null,
+			insurance:0,
+			point: []
+		};
+		domNodes.each(function(i,el){
+			var params = _parseParams.call(el);
+			if (!multiParams.matter) {
+				multiParams.matter = params.matter;
+			}
+			if (params.insurance) {
+				multiParams.insurance += params.insurance;
+			}
+			if ('point' in params && params.point.length) {
+				if (multiParams.point.length && (params.point[0].address == multiParams.point[0].address)) {
+					// если первая точка уже есть в комбинированном заказе - не добавляем ее
+					if ('weight' in params.point[0]) {
+						multiParams.point[0].weight += params.point[0].weight;
+					}
+					params.point.shift();
+				}
+				$.merge(multiParams.point, params.point);
+			}
+		});
+		return multiParams;
+	};
+
 
 	/**
 	 * Проверяет корректность параметров и бросает исключение, если что-то не так.
@@ -418,6 +542,29 @@
 		if (title) $(this).attr('title', title);
 	};
 
+
+	/**
+	 * Устанавливает состояние кнопки — CSS-класс, disabled и title.
+	 *
+	 * @param {String} state Одно из ['sending', 'sent', 'error']
+	 */
+	var _setComboButtonState = function(state, title) {
+		state = state || false;
+
+		$(this).removeClass();
+		$(this).addClass('DostavistaComboSubmit');
+
+		if (state) {
+			$(this).addClass('DostavistaComboSubmit_' + state);
+			if ($.inArray(state, ['sending', 'sent', 'error']) > -1) {
+				$(this).addClass('DostavistaButton_disabled');
+			}
+		}
+
+		$(this).removeAttr('title');
+		if (title) $(this).attr('title', title);
+	};
+
 	/**
 	 * Определяет, можно ли нажимать на кнопку по наличию disabled-модификатора.
 	 *
@@ -440,6 +587,13 @@
 
 	// Обработчики событий
 	$(document).on('click', '.DostavistaButton', handleClick);
+
+	// Обработчики событий
+	$(document).on('click', '.DostavistaCombo .DostavistaComboSubmit', handleClickMulti);
+	$(document).on('click', '.DostavistaCombo .DostavistaComboCheckbox', function() {
+		var btn = $(this).closest('.DostavistaCombo').find('.DostavistaComboSubmit');
+		_setComboButtonState.call(btn);
+	});
 
 	// Глобально доступный интерфейс.
 	exports.DostavistaApi = {

@@ -4,7 +4,8 @@
  * @author Oleg Gromov <mail@oleggromov.com>
  * https://github.com/dostavista/dostavista_api.js
  */
-.DostavistaButton {
+.DostavistaButton,
+.DostavistaComboSubmit {
 	border: none;
 	outline: none;
 	display: inline-block;
@@ -26,23 +27,27 @@
 	transition: background-color .5s;
 	cursor: pointer;
 }
-	
-	.DostavistaButton:after {
+
+	.DostavistaButton:after,
+	.DostavistaComboSubmit:after {
 		content: 'В Достависту';
 	}
 
 /* Состояние отправки */
-.DostavistaButton_sending {
+.DostavistaButton_sending,
+.DostavistaComboSubmit_sending {
 	background-color: #7d4662;
 	cursor: default;
 }
 
-	.DostavistaButton_sending:after {
+	.DostavistaButton_sending:after,
+	.DostavistaComboSubmit_sending:after {
 		content: 'Отправка...';
 	}
 
 /* Успешно */
-.DostavistaButton_sent {
+.DostavistaButton_sent,
+.DostavistaComboSubmit_sent {
 	background-color: #45a314;
 	-webkit-box-shadow: 0 2px 0 #1f5910;
 	-moz-box-shadow: 0 2px 0 #1f5910;
@@ -50,19 +55,22 @@
 	cursor: help;
 }
 
-	.DostavistaButton_sent:after {
+	.DostavistaButton_sent:after,
+	.DostavistaComboSubmit_sent:after {
 		content: 'Отправлен';
 	}
 
 /* Ошибка */
-.DostavistaButton_error {
+.DostavistaButton_error,
+.DostavistaComboSubmit_error {
 	background-color: red;
 	-webkit-box-shadow: 0 2px 0 #591010;
 	-moz-box-shadow: 0 2px 0 #591010;
 	box-shadow: 0 2px 0 #591010;
 	cursor: help;
 }
-	
-	.DostavistaButton_error:after {
+
+	.DostavistaButton_error:after,
+	.DostavistaComboSubmit_error:after {
 		content: 'Ошибка';
 	}
