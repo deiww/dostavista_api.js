@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Test dostavista API</title>
+
+		<link rel="stylesheet" href="dostavista_api.css">
+		<link rel="stylesheet" href="index.css">
+	</head>
+	<body>
+		<!-- <span class="DostavistaButton"></span> -->
+
+		<h1>Dostavista.js</h1>
+		<p>Данный плагин позволяет формировать и отправлять в сервис Dostavista заказы на доставку.</p>
+		<p>Параметры заказа прописываются в dsta-атрибуты элементов.</p>
+		<p>Возможны два основных варианта использования:</p>
+		<p>1) все параметры заказа указаны в атрибутах кнопки</p>
+		<p>2) параметры заказов указаны в атрибутах чекбоксов</p>
+		<p>Ниже описываются эти два варианта. Обратите анимание, что для работы плагина необходимо наличие библиотеки jquery.</p>
+
+		<h2>Параметры заказа указываются в атрибутах кнопки</h2>
+		<p>Для использования плагина нужно подключить скрипт dostavista_api.js и файл стилей dostavista_api.css и создать кнопку с классом DostavistaButton и следующими атрибутами:</p>
+		<table class="parameters-definition">
+			<thead>
+				<tr>
+					<th>Атрибут</th>
+					<th>Обязательный</th>
+					<th>Тип данных</th>
+					<th>Описание</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="param">dsta-matter</td>
+					<td>Да</td>
+					<td>Строка, до 300 символов</td>
+					<td>Содержимое посылки</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-insurance</td>
+					<td>Нет</td>
+					<td>Целое число</td>
+					<td>Сумма страховки</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_address</td>
+					<td>Да</td>
+					<td>Строка, до 300 символов</td>
+					<td>Адрес точки</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_required_time_start</td>
+					<td>Да</td>
+					<td>Время в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС</td>
+					<td>Начало интервала времени посещения этой точки курьером.</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_required_time</td>
+					<td>Да</td>
+					<td>Время в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС</td>
+					<td>Окончание интервала времени посещения этой точки курьером. Курьер должен прибыть на точку до этого времени.</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_contact_person</td>
+					<td>Нет</td>
+					<td>Строка, до 300 символов</td>
+					<td>Имя контактного лица на точке</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_phone</td>
+					<td>Да</td>
+					<td>Номер телефона, 10 последних цифр (без начальной 8 или 7)</td>
+					<td>Телефон контактного лица на точке</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_weight</td>
+					<td>Нет</td>
+					<td>Целое число</td>
+					<td>Вес отправления</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_client_order_id</td>
+					<td>Нет</td>
+					<td>Строка, до 100 символов</td>
+					<td>Внутренний номер заказа (по вашей нумерации).</td>
+				</tr>
+				<tr>
+					<td class="param">dsta-point0_taking</td>
+					<td>Нет</td>
+					<td>Целое число</td>
+					<td>Сумма выручки на точке. Если курьер должен забрать на точке оплату, укажите здесь ее сумму.</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>Каждый заказ может иметь до 10 точек. Для задания номера точки используется цифра после dsta-point (от 0 до 9). Атрибуты, начинающиеся с dsta-point0_, описывают первую точку, dsta-point1_ - вторую, dsta-point2_ - третью и так далее.</p>
+		<h3>Пример</h3>
+		<span class="DostavistaButton"
+			  dsta-matter="Проверочная доставка"
+			  dsta-insurance="13000"
+
+			  dsta-point0_address="ул. Новокосинская улица, 13"
+			  dsta-point0_required_time_start="2013-12-30 18:00:00"
+			  dsta-point0_required_time="2013-12-30 20:00:00"
+			  dsta-point0_contact_person="Контактное лицо магазина"
+			  dsta-point0_phone="+7 (923) 000-00-00"
+			  dsta-point0_weight="4"
+			  dsta-point0_client_order_id="9812"
+
+			  dsta-point1_address="улица Солянка, 1/2 "
+			  dsta-point1_required_time_start="2014-02-15 18:00:00"
+			  dsta-point1_required_time="2014-02-15 20:00:00"
+			  dsta-point1_contact_person="Олег"
+			  dsta-point1_phone="+7 (915) 123-03-00"
+			  dsta-point1_weight="4"
+			  dsta-point1_taking="4500"
+			  ></span>
+		<h3>Код примера</h3>
+		<textarea cols="80" rows="36" readonly="readonly" class="demo-code"><span class="DostavistaButton"
+		dsta-matter="Проверочная доставка"
+		dsta-insurance="13000"
+
+		dsta-point0_address="ул. Новокосинская улица, 13"
+		dsta-point0_required_time_start="2013-12-30 18:00:00"
+		dsta-point0_required_time="2013-12-30 20:00:00"
+		dsta-point0_contact_person="Контактное лицо магазина"
+		dsta-point0_phone="+7 (923) 000-00-00"
+		dsta-point0_weight="4"
+		dsta-point0_client_order_id="9812"
+
+		dsta-point1_address="улица Солянка, 1/2 "
+		dsta-point1_required_time_start="2014-02-15 18:00:00"
+		dsta-point1_required_time="2014-02-15 20:00:00"
+		dsta-point1_contact_person="Олег"
+		dsta-point1_phone="+7 (915) 123-03-00"
+		dsta-point1_weight="4"
+		dsta-point1_taking="4500"
+	>
+</span>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="dostavista_api.js"></script>
+<script>
+	DostavistaApi.setClient({
+		client_id: 13407,
+		token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
+	});
+	DostavistaApi.setCallback('onSendSuccess', function(result, button) {
+		console.log('Set message in CMS');
+		console.log(button);
+		console.log(result);
+	});
+</script>
+</textarea>
+
+
+	<h2>Параметры заказа указываются в атрибутах чекбоксов</h2>
+	<p>Этот вариант использования годится, если вам нужно сформировать одну доставку из нескольких заказов.
+		Для начала нужно создать контейнер - div или другой элемент с классом DostavistaCombo.
+		Внутри этого контейнера нужно разместить чекбоксы с классом DostavistaComboCheckbox.
+		Каждый чекбокс должен содержать dsta-атрибуты, описывающие ваш внутренний заказ (аналогично атрибутам кнопки в предыдущем примере).
+		Также внутри контейнера нужно разместить кнопку с классом DostavistaComboSubmit.
+		При нажатии на нее плагин соберет и отправит в Достависту заказ на доставку из всех отмеченных чекбоксов.
+		Неотмеченные чекбоксы игнорируются.</p>
+	<p>Первая точка (точка забора товара) будут сгруппированы. Это значит, что если вы отметили три заказа, и на них всех первая точка совпадает, то она будет добавлена в заказ только один раз (в качестве первой точки).</p>
+	<p>После получения ответа от сервера об успешном создании заказа будет выполнен вызов пользовательсткого колбэка _YOUR_CALLBACK_, определенного вызовом DostavistaApi.setCallback('onSendSuccess', _YOUR_CALLBACK_), а кнопка изменит свой вид. Все отмеченные чекбоксы станут в этом случае недоступны.</p>
+	<p>Если отметить другой чекбокс, кнопка отправки заказа снова станет доступна.</p>
+	<h3>Пример</h3>
+	<div class="DostavistaCombo">
+		<ol>
+			<li>
+				<label>
+				<input type="checkbox" class="DostavistaComboCheckbox"
+					dsta-matter="Проверочная доставка с несколькими точками"
+					dsta-insurance="13000"
+
+					dsta-point0_address="ул. Новокосинская улица, 13"
+					dsta-point0_required_time_start="2013-12-30 18:00:00"
+					dsta-point0_required_time="2013-12-30 20:00:00"
+					dsta-point0_contact_person="Контактное лицо магазина"
+					dsta-point0_phone="+7 (923) 000-00-00"
+					dsta-point0_weight="4"
+
+					dsta-point1_address="Покровка, 13"
+					dsta-point1_required_time_start="2014-02-15 18:00:00"
+					dsta-point1_required_time="2014-02-15 20:00:00"
+					dsta-point1_contact_person="Олег"
+					dsta-point1_phone="+7 (915) 123-03-00"
+					dsta-point1_weight="4"
+					dsta-point1_taking="4500"
+					dsta-point1_client_order_id="1"
+				/>
+				1 заказ
+				</label>
+			</li>
+			<li>
+				<label>
+				<input type="checkbox" class="DostavistaComboCheckbox"
+					dsta-matter="Проверочная доставка с несколькими точками"
+					dsta-insurance="13000"
+
+					dsta-point0_address="ул. Новокосинская улица, 13"
+					dsta-point0_required_time_start="2013-12-30 18:00:00"
+					dsta-point0_required_time="2013-12-30 20:00:00"
+					dsta-point0_contact_person="Контактное лицо магазина"
+					dsta-point0_phone="+7 (923) 000-00-00"
+					dsta-point0_weight="4"
+
+					dsta-point1_address="Осенний, 1"
+					dsta-point1_required_time_start="2014-02-15 18:00:00"
+					dsta-point1_required_time="2014-02-15 20:00:00"
+					dsta-point1_contact_person="Олег"
+					dsta-point1_phone="+7 (915) 123-03-00"
+					dsta-point1_weight="4"
+					dsta-point1_taking="4500"
+					dsta-point1_client_order_id="2"
+				/>
+				2 заказ
+				</label>
+			</li>
+			<li>
+				<label>
+				<input type="checkbox" class="DostavistaComboCheckbox"
+					dsta-matter="Проверочная доставка с несколькими точками"
+					dsta-insurance="13000"
+
+					dsta-point0_address="ул. Внезапная, 1"
+					dsta-point0_required_time_start="2013-12-30 18:00:00"
+					dsta-point0_required_time="2013-12-30 20:00:00"
+					dsta-point0_contact_person="Контактное лицо магазина на третьем заказе. Точка забора отличается от первого заказа."
+					dsta-point0_phone="+7 (923) 000-00-00"
+					dsta-point0_weight="4"
+
+					dsta-point1_address="бул Алмирала Ушакова, 15"
+					dsta-point1_required_time_start="2014-02-15 18:00:00"
+					dsta-point1_required_time="2014-02-15 20:00:00"
+					dsta-point1_contact_person="Клиент на третьем заказе"
+					dsta-point1_phone="+7 (915) 123-03-00"
+					dsta-point1_weight="4"
+					dsta-point1_taking="4500"
+					dsta-point1_client_order_id="3"
+				/>
+				3 заказ
+				</label>
+			</li>
+		</ol>
+		<button class="DostavistaComboSubmit"></button>
+	</div>
+	<h3>Код примера</h3>
+	<textarea cols="80" rows="40" readonly="readonly" class="demo-code"><div class="DostavistaCombo">
+<ol>
+	<li>
+		<label>
+		<input type="checkbox" class="DostavistaComboCheckbox"
+			dsta-matter="Проверочная доставка с несколькими точками"
+			dsta-insurance="13000"
+
+			dsta-point0_address="ул. Новокосинская улица, 13"
+			dsta-point0_required_time_start="2013-12-30 18:00:00"
+			dsta-point0_required_time="2013-12-30 20:00:00"
+			dsta-point0_contact_person="Контактное лицо магазина"
+			dsta-point0_phone="+7 (923) 000-00-00"
+			dsta-point0_weight="4"
+
+			dsta-point1_address="Покровка, 13"
+			dsta-point1_required_time_start="2014-02-15 18:00:00"
+			dsta-point1_required_time="2014-02-15 20:00:00"
+			dsta-point1_contact_person="Олег"
+			dsta-point1_phone="+7 (915) 123-03-00"
+			dsta-point1_weight="4"
+			dsta-point1_taking="4500"
+			dsta-point1_client_order_id="1"
+		/>
+		1 заказ
+		</label>
+	</li>
+	<li>
+		<label>
+		<input type="checkbox" class="DostavistaComboCheckbox"
+			dsta-matter="Проверочная доставка с несколькими точками"
+			dsta-insurance="13000"
+
+			dsta-point0_address="ул. Новокосинская улица, 13"
+			dsta-point0_required_time_start="2013-12-30 18:00:00"
+			dsta-point0_required_time="2013-12-30 20:00:00"
+			dsta-point0_contact_person="Контактное лицо магазина"
+			dsta-point0_phone="+7 (923) 000-00-00"
+			dsta-point0_weight="4"
+
+			dsta-point1_address="Осенний, 1"
+			dsta-point1_required_time_start="2014-02-15 18:00:00"
+			dsta-point1_required_time="2014-02-15 20:00:00"
+			dsta-point1_contact_person="Олег"
+			dsta-point1_phone="+7 (915) 123-03-00"
+			dsta-point1_weight="4"
+			dsta-point1_taking="4500"
+			dsta-point1_client_order_id="2"
+		/>
+		2 заказ
+		</label>
+	</li>
+	<li>
+		<label>
+		<input type="checkbox" class="DostavistaComboCheckbox"
+			dsta-matter="Проверочная доставка с несколькими точками"
+			dsta-insurance="13000"
+
+			dsta-point0_address="ул. Внезапная, 1"
+			dsta-point0_required_time_start="2013-12-30 18:00:00"
+			dsta-point0_required_time="2013-12-30 20:00:00"
+			dsta-point0_contact_person="Контактное лицо магазина на третьем заказе. Точка забора отличается от первого заказа."
+			dsta-point0_phone="+7 (923) 000-00-00"
+			dsta-point0_weight="4"
+
+			dsta-point1_address="бул Алмирала Ушакова, 15"
+			dsta-point1_required_time_start="2014-02-15 18:00:00"
+			dsta-point1_required_time="2014-02-15 20:00:00"
+			dsta-point1_contact_person="Клиент на третьем заказе"
+			dsta-point1_phone="+7 (915) 123-03-00"
+			dsta-point1_weight="4"
+			dsta-point1_taking="4500"
+			dsta-point1_client_order_id="3"
+		/>
+		3 заказ
+		</label>
+	</li>
+</ol>
+<button class="DostavistaComboSubmit"></button>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="dostavista_api.js"></script>
+<script>
+	DostavistaApi.setClient({
+		client_id: 13407,
+		token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
+	});
+	DostavistaApi.setCallback('onSendSuccess', function(result, button) {
+		console.log('Set message in CMS');
+		console.log(button);
+		console.log(result);
+	});
+</script>
+</div>
+</textarea>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="dostavista_api.js"></script>
+	<script>
+			//DostavistaApi.setApiUrl('http://dv.my/bapi/order');
+			DostavistaApi.setClient({
+				client_id: 13407,
+				token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
+			});
+			DostavistaApi.setCallback('onSendSuccess', function(result, button) {
+				console.log('Set message in CMS');
+				console.log(button);
+				console.log(result);
+			});
+		</script>
+</body>
+</html>
