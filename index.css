@@ -11,6 +11,7 @@
 }
 .parameters-definition .param {
 	white-space: nowrap;
+	font-family: monospace;
 }
 .demo-code {
 	background: #333;

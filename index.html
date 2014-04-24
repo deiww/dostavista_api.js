@@ -19,7 +19,7 @@
 		<p>Ниже описываются эти два варианта. Обратите анимание, что для работы плагина необходимо наличие библиотеки jquery.</p>
 
 		<h2>Параметры заказа указываются в атрибутах кнопки</h2>
-		<p>Для использования плагина нужно подключить скрипт dostavista_api.js и файл стилей dostavista_api.css и создать кнопку с классом DostavistaButton и следующими атрибутами:</p>
+		<p>Для использования плагина нужно подключить скрипт dostavista_api.js и файл стилей dostavista_api.css и создать кнопку с классом <i>DostavistaButton</i> и следующими атрибутами:</p>
 		<table class="parameters-definition">
 			<thead>
 				<tr>
@@ -140,8 +140,8 @@
 <script src="dostavista_api.js"></script>
 <script>
 	DostavistaApi.setClient({
-		client_id: 13407,
-		token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
+		client_id: 21297,
+		token: '6347E382B2E06D03C456DDCD8A8D63AE'
 	});
 	DostavistaApi.setCallback('onSendSuccess', function(result, button) {
 		console.log('Set message in CMS');
@@ -154,14 +154,14 @@
 
 	<h2>Параметры заказа указываются в атрибутах чекбоксов</h2>
 	<p>Этот вариант использования годится, если вам нужно сформировать одну доставку из нескольких заказов.
-		Для начала нужно создать контейнер - div или другой элемент с классом DostavistaCombo.
-		Внутри этого контейнера нужно разместить чекбоксы с классом DostavistaComboCheckbox.
+		Для начала нужно создать контейнер - div или другой элемент с классом <i>DostavistaCombo</i>.
+		Внутри этого контейнера нужно разместить чекбоксы с классом <i>DostavistaComboCheckbox</i>.
 		Каждый чекбокс должен содержать dsta-атрибуты, описывающие ваш внутренний заказ (аналогично атрибутам кнопки в предыдущем примере).
-		Также внутри контейнера нужно разместить кнопку с классом DostavistaComboSubmit.
+		Также внутри контейнера нужно разместить кнопку с классом <i>DostavistaComboSubmit</i>.
 		При нажатии на нее плагин соберет и отправит в Достависту заказ на доставку из всех отмеченных чекбоксов.
 		Неотмеченные чекбоксы игнорируются.</p>
 	<p>Первая точка (точка забора товара) будут сгруппированы. Это значит, что если вы отметили три заказа, и на них всех первая точка совпадает, то она будет добавлена в заказ только один раз (в качестве первой точки).</p>
-	<p>После получения ответа от сервера об успешном создании заказа будет выполнен вызов пользовательсткого колбэка _YOUR_CALLBACK_, определенного вызовом DostavistaApi.setCallback('onSendSuccess', _YOUR_CALLBACK_), а кнопка изменит свой вид. Все отмеченные чекбоксы станут в этом случае недоступны.</p>
+	<p>После получения ответа от сервера об успешном создании заказа будет выполнен вызов пользовательского колбэка _YOUR_CALLBACK_, определенного вызовом DostavistaApi.setCallback('onSendSuccess', _YOUR_CALLBACK_), а кнопка изменит свой вид. Все отмеченные чекбоксы станут в этом случае недоступны.</p>
 	<p>Если отметить другой чекбокс, кнопка отправки заказа снова станет доступна.</p>
 	<h3>Пример</h3>
 	<div class="DostavistaCombo">
@@ -343,16 +343,16 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="dostavista_api.js"></script>
 	<script>
-			//DostavistaApi.setApiUrl('http://dv.my/bapi/order');
-			DostavistaApi.setClient({
-				client_id: 13407,
-				token: '0E5E5E75582AB005E00BC8C49F6C6EF2'
-			});
-			DostavistaApi.setCallback('onSendSuccess', function(result, button) {
-				console.log('Set message in CMS');
-				console.log(button);
-				console.log(result);
-			});
-		</script>
+		//DostavistaApi.setApiUrl('http://dv.my/bapi/order');
+		DostavistaApi.setClient({
+			client_id: 21297,
+			token: '6347E382B2E06D03C456DDCD8A8D63AE'
+		});
+		DostavistaApi.setCallback('onSendSuccess', function(result, button) {
+			console.log('Set message in CMS');
+			console.log(button);
+			console.log(result);
+		});
+	</script>
 </body>
 </html>
