@@ -27,7 +27,7 @@
 	var jsonpTimeout = 5 * 1000;
 	var jsonpTimer;
 
-	var apiUrl = 'http://dostavista.ru/bapi/order';
+	var apiUrl = 'http://bapi.dostavista.ru/bapi/order';
 	var apiUrlBeta = 'http://beta.dostavista.ru/bapi/order';
 	var testOnBeta = false;
 
