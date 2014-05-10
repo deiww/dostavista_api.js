@@ -33,6 +33,66 @@ JS-клиент предназначен для подключения к адм
 		></span>
 	```
 
+    или для комбо-заказов
+
+	```html
+    <div class="DostavistaCombo">
+        <ol>
+            <li>
+                <label>
+                    <input type="checkbox" class="DostavistaComboCheckbox"
+                           dsta-matter="Проверочная доставка с несколькими точками"
+                           dsta-insurance="13000"
+
+                           dsta-point0_address="ул. Новокосинская улица, 13"
+                           dsta-point0_required_time_start="2013-12-30 18:00:00"
+                           dsta-point0_required_time="2013-12-30 20:00:00"
+                           dsta-point0_contact_person="Контактное лицо магазина"
+                           dsta-point0_phone="+7 (923) 000-00-00"
+                           dsta-point0_weight="4"
+
+                           dsta-point1_address="Покровка, 13"
+                           dsta-point1_required_time_start="2014-02-15 18:00:00"
+                           dsta-point1_required_time="2014-02-15 20:00:00"
+                           dsta-point1_contact_person="Олег"
+                           dsta-point1_phone="+7 (915) 123-03-00"
+                           dsta-point1_weight="4"
+                           dsta-point1_taking="4500"
+                           dsta-point1_client_order_id="1"
+                           />
+                    1 заказ
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" class="DostavistaComboCheckbox"
+                           dsta-matter="Проверочная доставка с несколькими точками"
+                           dsta-insurance="13000"
+
+                           dsta-point0_address="ул. Новокосинская улица, 13"
+                           dsta-point0_required_time_start="2013-12-30 18:00:00"
+                           dsta-point0_required_time="2013-12-30 20:00:00"
+                           dsta-point0_contact_person="Контактное лицо магазина"
+                           dsta-point0_phone="+7 (923) 000-00-00"
+                           dsta-point0_weight="4"
+
+                           dsta-point1_address="Осенний, 1"
+                           dsta-point1_required_time_start="2014-02-15 18:00:00"
+                           dsta-point1_required_time="2014-02-15 20:00:00"
+                           dsta-point1_contact_person="Олег"
+                           dsta-point1_phone="+7 (915) 123-03-00"
+                           dsta-point1_weight="4"
+                           dsta-point1_taking="4500"
+                           dsta-point1_client_order_id="2"
+                           />
+                    2 заказ
+                </label>
+            </li>
+        </ol>
+        <button class="DostavistaComboSubmit"></button>
+    </div>
+	```
+
 	**Полный список всех атрибутов**
 
 	| Атрибут | Тип и ограничения | Значение |
@@ -44,7 +104,7 @@ JS-клиент предназначен для подключения к адм
 	| `dsta-required_time` | YYYY-MM-DD HH:MM:SS | Время прибытия на точку (до) * обязательно |
 	| `dsta-contact_person` | Строка | Имя контактного лица на точке забора |
 	| `dsta-phone` | 10 цифр без знака + и международного кода | Телефон контактного лица на точке забора |
-	| `dsta-weight` | Целое число | Вес на точке | 
+	| `dsta-weight` | Целое число | Вес на точке |
 	| `dsta-taking` | Целое число | Стоимость на точке: сумма, которую должен взять курьер на точке |
 	| `dsta-client_order_id` | Строка | Номер заказа в магазине, используется для уведомлений на точках |
 
@@ -63,22 +123,7 @@ JS-клиент предназначен для подключения к адм
 	</script>
 	```
 
-5. **Задать общий адрес**, если все заказы доставляются из одной точки «А» по разным адресам.
-
-	```html
-	<script>
-		DostavistaApi.setDefaultFrom({
-			client_order_id: ""
-			weight: ""
-			phone: ""
-			contact_person: ""
-			required_time: ""
-			required_time_start: ""
-			address: ""
-	</script>
-	```
-
-6. **Задать необходимые колбэки**. Доступные варианты перечислены в таблице ниже.
+5. **Задать необходимые колбэки**. Доступные варианты перечислены в таблице ниже.
 
 	```html
 	<script>
@@ -95,6 +140,7 @@ JS-клиент предназначен для подключения к адм
 	| onBeforeSend |  | Вызывается до отправки данных и парсинга параметров. Можно использовать, чтобы добавить отсутствующие параметры. Должен возвращать `jQuery.Deferred.promise()` — см. код примера `api_test.html`! |
 	| onSendSuccess | result, button | Выполняется, если заказ отправлен в Достависту. Получает result (объект с ответом API) и button (DOM-ноду с кнопкой). |
 	| onSendError | jqxhr, text, error | Выполняется, если при отправке произошла ошибка. Получает параметры, идентичные методу $.ajax().fail(). |
+	| onError | jqxhr, text, error | Выполняется, если при формировании заказа произошла ошибка (невалидные данные). Функция принимает 1 параметр error - текст сообщения об ошибке. |
 
 
 ## Вопросы
@@ -102,8 +148,7 @@ JS-клиент предназначен для подключения к адм
 1. В каком часовом поясе указывается время? Не будет ли ошибок с конвертацией? Можно попробовать перейти на [ISO-8061](http://ru.wikipedia.org/wiki/ISO_8601) с обязательным указанием часового пояса.
 
 
-## TODO 
-1. Отправка множества точек одним вызовом
+## TODO
 2. Сделать атрибуты для задания своей точки забора для каждого заказа.
 3. Перейти на CORS
 
