@@ -34,7 +34,8 @@
 	var callbacks = {
 		onBeforeSend: null,
 		onSendSuccess: null,
-		onSendError: null
+		onSendError: null,
+        onError: null
 	};
 	var authParams = {};
 
@@ -260,6 +261,9 @@
 			} catch (e) {
 				_error(e);
 				_setComboButtonState.call(button, 'error', e);
+                if (typeof callbacks['onError'] === 'function') {
+					callbacks['onError'](e, nodes);
+				}
 
 				return;
 			}
