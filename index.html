@@ -98,14 +98,14 @@
             <span class="DostavistaButton"
                   dsta-matter="Проверочная доставка"
                   dsta-insurance="13000"
-                  dsta-point0_address="ул. Новокосинская улица, 13"
+                  dsta-point0_address="Москва, ул. Новокосинская улица, 13"
                   dsta-point0_required_time_start="2013-12-30 18:00:00"
                   dsta-point0_required_time="2013-12-30 20:00:00"
                   dsta-point0_contact_person="Контактное лицо магазина"
                   dsta-point0_phone="+7 (923) 000-00-00"
                   dsta-point0_weight="4"
                   dsta-point0_client_order_id="9812"
-                  dsta-point1_address="улица Солянка, 1/2 "
+                  dsta-point1_address="Москва, улица Солянка, 1/2 "
                   dsta-point1_required_time_start="2014-02-15 18:00:00"
                   dsta-point1_required_time="2014-02-15 20:00:00"
                   dsta-point1_contact_person="Олег"
@@ -137,14 +137,14 @@
                                    dsta-matter="Проверочная доставка с несколькими точками"
                                    dsta-insurance="9000"
 
-                                   dsta-point0_address="ул. Новокосинская улица, 13"
+                                   dsta-point0_address="Москва, ул. Новокосинская улица, 13"
                                    dsta-point0_required_time_start="2013-12-30 18:00:00"
                                    dsta-point0_required_time="2013-12-30 20:00:00"
                                    dsta-point0_contact_person="Контактное лицо магазина"
                                    dsta-point0_phone="+7 (923) 000-00-00"
                                    dsta-point0_weight="4"
 
-                                   dsta-point1_address="Покровка, 13"
+                                   dsta-point1_address="Москва, Покровка, 13"
                                    dsta-point1_required_time_start="2014-02-15 18:00:00"
                                    dsta-point1_required_time="2014-02-15 20:00:00"
                                    dsta-point1_contact_person="Олег"
@@ -162,14 +162,14 @@
                                    dsta-matter="Проверочная доставка с несколькими точками"
                                    dsta-insurance="10000"
 
-                                   dsta-point0_address="ул. Новокосинская улица, 13"
+                                   dsta-point0_address="Москва, ул. Новокосинская улица, 13"
                                    dsta-point0_required_time_start="2013-12-30 18:00:00"
                                    dsta-point0_required_time="2013-12-30 20:00:00"
                                    dsta-point0_contact_person="Контактное лицо магазина"
                                    dsta-point0_phone="+7 (923) 000-00-00"
                                    dsta-point0_weight="4"
 
-                                   dsta-point1_address="Осенний, 1"
+                                   dsta-point1_address="Москва, Осенний бульвар, 1А"
                                    dsta-point1_required_time_start="2014-02-15 18:00:00"
                                    dsta-point1_required_time="2014-02-15 20:00:00"
                                    dsta-point1_contact_person="Олег"
@@ -187,14 +187,14 @@
                                    dsta-matter="Проверочная доставка с несколькими точками"
                                    dsta-insurance="11000"
 
-                                   dsta-point0_address="ул. Первомайская, 100"
+                                   dsta-point0_address="Москва, ул. Первомайская, 100"
                                    dsta-point0_required_time_start="2013-12-30 18:00:00"
                                    dsta-point0_required_time="2013-12-30 20:00:00"
                                    dsta-point0_contact_person="Контактное лицо магазина на третьем заказе. Точка забора отличается от первого заказа."
                                    dsta-point0_phone="+7 (923) 000-00-00"
                                    dsta-point0_weight="4"
 
-                                   dsta-point1_address="бул Алмирала Ушакова, 15"
+                                   dsta-point1_address="Москва, бул Алмирала Ушакова, 15"
                                    dsta-point1_required_time_start="2014-02-15 18:00:00"
                                    dsta-point1_required_time="2014-02-15 20:00:00"
                                    dsta-point1_contact_person="Клиент на третьем заказе"
@@ -219,7 +219,7 @@
                                    dsta-point0_phone="WRONG-PHONE"
                                    dsta-point0_weight="4"
 
-                                   dsta-point1_address="бул Алмирала Ушакова, 15"
+                                   dsta-point1_address="Москва, бул Алмирала Ушакова, 15"
                                    dsta-point1_required_time_start="2014-02-15 18:00:00"
                                    dsta-point1_required_time="2014-02-15 20:00:00"
                                    dsta-point1_contact_person="Клиент на третьем заказе"
@@ -240,20 +240,19 @@
 
         <h2>Ответ сервиса</h2>
         <p>Как видно из вышеприведенных примеров, ответ API передается в callback-функции, задаваемые методом <tt>DostavistaApi.setCallback(callbackName, myFunction)</tt>.</p>
-<p>Существует 2 вида callback'ов: onSendSuccess и onSendError.</p>
-<h3>onSendSuccess</h3>
-<p>Этот колбэк вызывается при успешном создании заказа. Функция принимает 2 параметра - <tt>result</tt> и <tt>nodes</tt>.</p>
-<p><tt>result</tt> - это объект, содержащий свойства <tt>order_id</tt> - номер заказа в Достависте и <tt>payment</tt> - примерная стоимость доставки</p>
-<p><tt>nodes</tt> - это список элементов DOM, из которых брались данные для формирования заказа. В варианте интеграции с одной кнопкой этот список будет содержать только эту кнопку,
-а для комбо-заказов - отмеченные чекбоксы.</p>
-<h3>onError</h3>
-<p>Этот колбэк вызывается, если при формировании заказа произошла ошибка (невалидные данные). Функция принимает 1 параметр <tt>error</tt> - текст сообщения об ошибке.</p>
-<h3>onSendError</h3>
-<p>Этот колбэк вызывается, если при отправке заказа в Достависту произошла ошибка. Функция принимает 3 параметра - <tt>jqxhr</tt> - объект типа jQuery XMLHttpRequest, <tt>text</tt> - ответ сервера и <tt>error</tt> - текст ошибки.</p>
+    <p>Существует 2 вида callback'ов: onSendSuccess и onSendError.</p>
+    <h3>onSendSuccess</h3>
+    <p>Этот колбэк вызывается при успешном создании заказа. Функция принимает 2 параметра - <tt>result</tt> и <tt>nodes</tt>.</p>
+    <p><tt>result</tt> - это объект, содержащий свойства <tt>order_id</tt> - номер заказа в Достависте и <tt>payment</tt> - примерная стоимость доставки</p>
+    <p><tt>nodes</tt> - это список элементов DOM, из которых брались данные для формирования заказа. В варианте интеграции с одной кнопкой этот список будет содержать только эту кнопку,
+    а для комбо-заказов - отмеченные чекбоксы.</p>
+    <h3>onError</h3>
+    <p>Этот колбэк вызывается, если при формировании заказа произошла ошибка (невалидные данные). Функция принимает 1 параметр <tt>error</tt> - текст сообщения об ошибке.</p>
+    <h3>onSendError</h3>
+    <p>Этот колбэк вызывается, если при отправке заказа в Достависту произошла ошибка. Функция принимает 3 параметра - <tt>jqxhr</tt> - объект типа jQuery XMLHttpRequest, <tt>text</tt> - ответ сервера и <tt>error</tt> - текст ошибки.</p>
 
-<div id="scriptDemo">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="dostavista_api.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="build/dostavista_api.min.js"></script>
     <script>
         DostavistaApi.setClient({
             client_id: 13,
@@ -271,11 +270,52 @@
             alert(error);
             console.log(nodes);
         });
-    </script>
-    <script>
+
+        function pad(number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        }
+
+        /**
+         * @param {Date} date
+         * @return {string}
+         */
+        function dateFormat(date) {
+            return date.getUTCFullYear() +
+                '-' + pad(date.getUTCMonth() + 1) +
+                '-' + pad(date.getUTCDate()) +
+                ' ' + pad(date.getUTCHours()) +
+                ':' + pad(date.getUTCMinutes()) +
+                ':' + pad(date.getUTCSeconds())
+            ;
+        }
+
+        var tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+
+        tomorrow.setUTCHours(13);
+        tomorrow.setUTCMinutes(0);
+        tomorrow.setUTCSeconds(0);
+        $('[dsta-point0_required_time_start]').attr('dsta-point0_required_time_start', dateFormat(tomorrow));
+
+        tomorrow.setUTCHours(15);
+        tomorrow.setUTCMinutes(30);
+        tomorrow.setUTCSeconds(0);
+        $('[dsta-point0_required_time]').attr('dsta-point0_required_time', dateFormat(tomorrow));
+
+        tomorrow.setUTCHours(18);
+        tomorrow.setUTCMinutes(0);
+        tomorrow.setUTCSeconds(0);
+        $('[dsta-point1_required_time_start]').attr('dsta-point1_required_time_start', dateFormat(tomorrow));
+
+        tomorrow.setUTCHours(20);
+        tomorrow.setUTCMinutes(0);
+        tomorrow.setUTCSeconds(0);
+        $('[dsta-point1_required_time]').attr('dsta-point1_required_time', dateFormat(tomorrow));
+
         $('#singleDemoCode').text($('#singleDemo').html());
         $('#comboDemoCode').text($('#comboDemo').html());
     </script>
-</div>
 </body>
 </html>
