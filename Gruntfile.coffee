@@ -1,7 +1,7 @@
 module.exports = (grunt) ->
-	banner = '/*! dostavista_api.js v0.9 | (c) 2014 Dostavista.ru, Oleg Gromov <mail@oleggromov.com> | https://github.com/dostavista/dostavista_api.js */'
+	banner = '/*! dostavista_api.js v0.10 | (c) 2014 Dostavista.ru, <api@dostavista.ru> | https://github.com/dostavista/dostavista_api.js */'
 
-	grunt.initConfig 
+	grunt.initConfig
 		uglify:
 			production:
 				src: 'dostavista_api.js'
